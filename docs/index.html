@@ -145,6 +145,10 @@ textarea.sum{width:100%;min-height:170px;font:.85rem/1.5 ui-monospace,Menlo,Cons
 const BRAND = "Security Awareness Training";
 const CUSTOMER = "GrowthHouse"; // per-customer branding
 const LOGO = "assets/growthhouse-logo.svg"; // per-customer logo
+// ---- Publish-time campaign variables (set these before each rollout) ----
+const WINDOW_START = ""; // "YYYY-MM-DD" the questions open; "" = always open.
+const WINDOW_CLOSE = ""; // "YYYY-MM-DD" the questions close; "" = one calendar month after WINDOW_START (if set), else always open.
+const REPORT_EMAIL = ""; // Address the "Submit my results" button emails to; "" hides the button (Copy/Download still available).
 try{ document.title = (CUSTOMER ? CUSTOMER + " — " : "") + BRAND; }catch(e){}
 const PASS_MARK = 2; // correct answers needed out of 3 to pass a topic
 
@@ -786,6 +790,30 @@ const rec = id => S.t[id] || { viewed:false, attempts:0, best:0, passed:false };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const doneCount = () => ALL.filter(t => rec(t.id).passed).length;
 const pct = (n,d) => d ? Math.round(n/d*100) : 0;
+function niceDate(s){ if(!s) return ""; const d=new Date(s+"T00:00:00"); return isNaN(d)?s:d.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"}); }
+function closeDate(){ if(WINDOW_CLOSE) return WINDOW_CLOSE; if(WINDOW_START){ const d=new Date(WINDOW_START+"T00:00:00"); d.setMonth(d.getMonth()+1); return d.toISOString().slice(0,10); } return ""; }
+function windowState(){ const today=new Date().toISOString().slice(0,10); if(WINDOW_START && today<WINDOW_START) return "before"; const c=closeDate(); if(c && today>c) return "closed"; if(!WINDOW_START && !c) return "always"; return "open"; }
+const trainingOpen = () => { const s=windowState(); return s==="open"||s==="always"; };
+function csvQuote(v){ v=String(v==null?"":v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+function csvText(){
+  const head=["Name","Organisation","Submitted","WindowStart","WindowClose","TopicsPassed","TotalTopics","PercentPassed"];
+  const row=[S.name||"",S.org||CUSTOMER||"",new Date().toISOString().slice(0,10),WINDOW_START||"",closeDate()||"",doneCount(),total,pct(doneCount(),total)];
+  ALL.forEach(t=>{ head.push(t.title); const r=rec(t.id); row.push(r.passed?("pass "+r.best+"/3"):(r.attempts?("fail "+r.best+"/3"):"not started")); });
+  return head.map(csvQuote).join(",")+"\n"+row.map(csvQuote).join(",")+"\n";
+}
+function submitMailto(){
+  const subj=(CUSTOMER?CUSTOMER+" — ":"")+BRAND+" results: "+(S.name||"(no name)");
+  const body=summaryText()+"\n\n----- CSV (please keep, used for the report) -----\n"+csvText();
+  return "mailto:"+encodeURIComponent(REPORT_EMAIL)+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
+}
+function downloadCSV(){
+  try{
+    const blob=new Blob([csvText()],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download=(CUSTOMER?CUSTOMER+"-":"")+"training-"+((S.name||"learner").replace(/[^a-z0-9]+/gi,"-").toLowerCase().replace(/^-|-$/g,""))+".csv";
+    document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},0);
+  }catch(e){ alert("Could not download the file on this device. Please use Copy summary instead."); }
+}
 function statusOf(id){
   const r = rec(id);
   if(r.passed) return "done";
@@ -844,6 +872,10 @@ function renderHome(){
     <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct(d,total)}"><i style="width:${pct(d,total)}%"></i></div>
     <div><b>${d} of ${total} topics passed</b><small>Pass a topic by answering at least ${PASS_MARK} of 3 correctly.</small></div>
   </div>
+  ${(() => { const st=windowState(); if(st==="always") return ""; const open=esc(niceDate(WINDOW_START)), close=esc(niceDate(closeDate()));
+    if(st==="before") return `<div class="tip" style="border-left-color:var(--warn);background:var(--warn-soft)"><b>Opens ${open}</b>You can read the lessons now. The questions open on ${open}.</div>`;
+    if(st==="closed") return `<div class="tip" style="border-left-color:var(--bad);background:var(--bad-soft)"><b>Closed ${close}</b>This training window has closed. You can still review the lessons.</div>`;
+    return `<div class="tip"><b>Open until ${close}</b>Please complete all topics and submit your results before ${close}.</div>`; })()}
   <main class="board">${cols}</main>
   <div class="foot">
     <button class="btn teal" data-act="results">View my results</button>
@@ -876,7 +908,7 @@ function renderTopic(){
       <div class="dont"><b>Don't</b><ul>${t.donts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div></div>` : ""}
     <div class="tip"><b>Remember</b>${esc(t.tip)}</div>
     <div class="foot" style="margin-top:0">
-      <button class="btn primary" data-act="start" data-id="${t.id}">${r.attempts ? "Retake the questions" : "Start the questions"}</button>
+      ${trainingOpen() ? `<button class="btn primary" data-act="start" data-id="${t.id}">${r.attempts ? "Retake the questions" : "Start the questions"}</button>` : `<span class="note">${windowState()==="before" ? "The questions open on "+esc(niceDate(WINDOW_START))+"." : "This training has closed."}</span>`}
       ${next ? `<button class="btn" data-act="open" data-id="${next.id}">Next: ${esc(next.title)}</button>` : ""}
     </div>
   </div>`;
@@ -885,6 +917,7 @@ function renderTopic(){
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
 function startQuiz(id){
+  if(!trainingOpen()) return;
   const t = ALL.find(x => x.id===id);
   Q = { id, idx:0, score:0, answered:false, picked:-1,
         order: t.qs.map(q => shuffle([0,1,2,3])) };
@@ -990,7 +1023,12 @@ function renderResults(){
     <div class="tblwrap"><table class="tbl"><thead><tr><th>Topic</th><th>Status</th><th>Best score</th></tr></thead><tbody>${rows}</tbody></table></div>
     <p class="note">Copy this summary and send it to whoever asked for your results.</p>
     <textarea class="sum" id="sum" readonly>${esc(summaryText())}</textarea>
-    <div class="foot"><button class="btn teal" data-act="copy" id="cpy">Copy summary</button></div>
+    <div class="foot">
+      <button class="btn teal" data-act="copy" id="cpy">Copy summary</button>
+      <button class="btn" data-act="download">Download CSV</button>
+      ${REPORT_EMAIL ? `<a class="btn primary" href="${submitMailto()}">Submit my results</a>` : ""}
+    </div>
+    ${REPORT_EMAIL ? `<p class="note">Submit opens an email to ${esc(REPORT_EMAIL)} with your results in the message. For a file, use Download CSV and attach it.</p>` : ""}
   </div>`;
 }
 
@@ -1034,6 +1072,7 @@ app.addEventListener("click", e => {
       navigator.clipboard.writeText(ta.value).then(() => { btn.textContent = "Copied"; }, fallback);
     }catch(err){ fallback(); }
   }
+  else if(act==="download"){ downloadCSV(); }
   else if(act==="reset"){
     if(!resetArmed){ resetArmed = true; b.textContent = "Click again to erase all progress"; return; }
     S = { name:S.name, org:S.org, t:{} }; save(); resetArmed=false; render();
