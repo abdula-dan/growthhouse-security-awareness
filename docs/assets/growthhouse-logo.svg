@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 224 48" role="img" aria-label="GrowthHouse">
+  <!-- PLACEHOLDER logo. Replace this file with GrowthHouse's official logo (same filename), or point LOGO in index.html at the new file. -->
+  <g fill="none" stroke="#1f9d57" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 26 L24 12 L39 26"/>
+    <path d="M14 26 V39 H34 V26"/>
+    <path d="M24 35 V21 M19 26 L24 21 L29 26"/>
+  </g>
+  <text x="52" y="32" font-family="Georgia,'Times New Roman',serif" font-size="25" font-weight="700" fill="#10272f">Growth<tspan fill="#1f9d57">House</tspan></text>
+</svg>

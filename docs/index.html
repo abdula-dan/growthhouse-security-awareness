@@ -36,6 +36,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--signal);outline-offset:2px}
 .wrap{max-width:1180px;margin:0 auto;padding:20px 18px 56px}
 .top{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:22px}
+.brandbar{display:inline-flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 14px;margin-bottom:14px}
+.brandlogo{display:block;height:40px;width:auto}
 .top h1{font-size:clamp(1.9rem,4.5vw,2.9rem);max-width:16ch}
 .top p{margin:8px 0 0;color:var(--muted);max-width:52ch}
 .who{display:flex;gap:10px;flex-wrap:wrap}
@@ -142,6 +144,7 @@ textarea.sum{width:100%;min-height:170px;font:.85rem/1.5 ui-monospace,Menlo,Cons
    The correct answer is always listed first here; order is shuffled when shown. */
 const BRAND = "Security Awareness Training";
 const CUSTOMER = "GrowthHouse"; // per-customer branding
+const LOGO = "assets/growthhouse-logo.svg"; // per-customer logo
 try{ document.title = (CUSTOMER ? CUSTOMER + " — " : "") + BRAND; }catch(e){}
 const PASS_MARK = 2; // correct answers needed out of 3 to pass a topic
 
@@ -826,6 +829,7 @@ function renderHome(){
   app.innerHTML = `
   <header class="top">
     <div>
+      ${LOGO ? `<div class="brandbar"><img class="brandlogo" src="${esc(LOGO)}" alt="${esc(CUSTOMER||BRAND)} logo" onerror="this.closest('.brandbar').style.display='none'"></div>` : ""}
       <h1>${esc(BRAND)}</h1>
       ${CUSTOMER ? `<p class="note" style="margin:6px 0 0;font-weight:600;color:var(--teal)">Prepared for ${esc(CUSTOMER)}</p>` : ""}
       <p>Short lessons on the threats that matter most. Read a topic, answer three questions, and track your progress as you go.</p>
