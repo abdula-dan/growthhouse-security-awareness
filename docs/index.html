@@ -146,9 +146,9 @@ const BRAND = "Security Awareness Training";
 const CUSTOMER = "GrowthHouse"; // per-customer branding
 const LOGO = "assets/growthhouse-logo.svg"; // per-customer logo
 // ---- Publish-time campaign variables (set these before each rollout) ----
-const WINDOW_START = ""; // "YYYY-MM-DD" the questions open; "" = always open.
-const WINDOW_CLOSE = ""; // "YYYY-MM-DD" the questions close; "" = one calendar month after WINDOW_START (if set), else always open.
-const REPORT_EMAIL = ""; // Address the "Submit my results" button emails to; "" hides the button (Copy/Download still available).
+const WINDOW_START = "2026-10-14"; // opens today
+const WINDOW_CLOSE = "2026-11-30"; // closes end of November
+const REPORT_EMAIL = "abdul@dialanerd.co.za"; // results submission mailbox
 try{ document.title = (CUSTOMER ? CUSTOMER + " — " : "") + BRAND; }catch(e){}
 const PASS_MARK = 2; // correct answers needed out of 3 to pass a topic
 
