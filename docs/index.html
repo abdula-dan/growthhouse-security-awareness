@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security Awareness Training</title>
+<style>
+:root{
+  --bg:#eaf2f2; --surface:#ffffff; --surface2:#f3f8f8; --text:#10272f; --muted:#51666d;
+  --line:#c9d9db; --teal:#0b7a84; --teal-ink:#ffffff; --teal-soft:#d5eef0;
+  --signal:#c93f08; --signal-ink:#ffffff; --ok:#1e7d3f; --ok-soft:#dcf1e3;
+  --bad:#b3261e; --bad-soft:#fbe3e1; --warn:#8a5a00; --warn-soft:#fbefd0;
+  --head:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#08161b; --surface:#102229; --surface2:#0c1c22; --text:#e4f0f1; --muted:#93acb1;
+    --line:#244149; --teal:#3cc3cc; --teal-ink:#052a2e; --teal-soft:#123a40;
+    --signal:#ff7a45; --signal-ink:#2b0d00; --ok:#5fd28a; --ok-soft:#12361f;
+    --bad:#ff8a80; --bad-soft:#3a1816; --warn:#f2c35b; --warn-soft:#3a2d0b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#08161b; --surface:#102229; --surface2:#0c1c22; --text:#e4f0f1; --muted:#93acb1;
+  --line:#244149; --teal:#3cc3cc; --teal-ink:#052a2e; --teal-soft:#123a40;
+  --signal:#ff7a45; --signal-ink:#2b0d00; --ok:#5fd28a; --ok-soft:#12361f;
+  --bad:#ff8a80; --bad-soft:#3a1816; --warn:#f2c35b; --warn-soft:#3a2d0b;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--body);-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:var(--head);font-weight:700;line-height:1.15;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 18px 56px}
+.top{display:flex;gap:20px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:22px}
+.top h1{font-size:clamp(1.9rem,4.5vw,2.9rem);max-width:16ch}
+.top p{margin:8px 0 0;color:var(--muted);max-width:52ch}
+.who{display:flex;gap:10px;flex-wrap:wrap}
+.who label{display:flex;flex-direction:column;font-size:.82rem;color:var(--muted);gap:3px}
+.who input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);min-width:170px}
+.overall{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:22px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.overall .big{font-family:var(--head);font-size:2.2rem;font-weight:700;min-width:4.2ch}
+.bar{flex:1;min-width:200px;height:12px;background:var(--surface2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--teal);border-radius:99px;transition:width .35s}
+.overall small{color:var(--muted);display:block}
+.board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.col{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.col h2{font-size:1.15rem}
+.col .mini{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted)}
+.col .mini .bar{height:6px;min-width:0}
+.tile{width:100%;text-align:left;border:1.5px solid var(--line);background:var(--surface2);border-radius:10px;padding:10px 11px;display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:52px}
+.tile:hover{border-color:var(--teal)}
+.tile .t{font-weight:600;font-size:.95rem;line-height:1.25}
+.tile .s{font-size:.75rem;color:var(--muted);display:block;font-weight:400;margin-top:2px}
+.tile .dot{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem;font-weight:700}
+.tile.read{border-color:var(--teal)}
+.tile.read .dot{border-color:var(--teal)}
+.tile.tried{border-color:var(--warn);background:var(--warn-soft)}
+.tile.tried .dot{border-color:var(--warn);color:var(--warn)}
+.tile.done{border-color:var(--teal);background:var(--teal-soft)}
+.tile.done .dot{background:var(--teal);border-color:var(--teal);color:var(--teal-ink)}
+.foot{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 16px;font-weight:600}
+.btn:hover{border-color:var(--teal)}
+.btn.primary{background:var(--signal);border-color:var(--signal);color:var(--signal-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.teal{background:var(--teal);border-color:var(--teal);color:var(--teal-ink)}
+.btn.danger{color:var(--bad)}
+.note{font-size:.85rem;color:var(--muted)}
+.panel{max-width:760px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,4vw,34px)}
+.crumb{background:none;border:none;padding:0;color:var(--teal);font-weight:600;margin-bottom:14px}
+.panel h1{font-size:clamp(1.6rem,4vw,2.3rem);margin-bottom:6px}
+.panel .intro{font-size:1.08rem;color:var(--muted);margin:0 0 18px;max-width:62ch}
+.panel ul{padding-left:1.2rem;margin:0 0 18px;max-width:66ch}
+.panel li{margin-bottom:9px}
+.tip{background:var(--teal-soft);border-left:5px solid var(--teal);border-radius:8px;padding:12px 14px;margin:0 0 22px}
+.tip b{display:block;margin-bottom:2px}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px;color:var(--muted);font-size:.9rem}
+.qhead .bar{height:7px;flex:1;max-width:220px;min-width:80px}
+.q{font-family:var(--head);font-size:1.35rem;font-weight:700;line-height:1.3;margin:0 0 16px}
+.opts{display:grid;gap:10px;margin-bottom:16px}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--surface2);border-radius:10px;padding:12px 14px}
+.opt:hover:not([disabled]){border-color:var(--teal)}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{border-radius:10px;padding:12px 14px;margin-bottom:16px}
+.fb.good{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.fb.miss{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.score{font-family:var(--head);font-size:3rem;font-weight:700}
+.tbl{width:100%;border-collapse:collapse;font-size:.92rem;margin:12px 0 18px}
+.tbl th,.tbl td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+.tbl th{font-weight:600;color:var(--muted)}
+.tblwrap{overflow-x:auto}
+textarea.sum{width:100%;min-height:170px;font:.85rem/1.5 ui-monospace,Menlo,Consolas,monospace;background:var(--surface2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px}
+.pill{display:inline-block;border-radius:99px;padding:1px 10px;font-size:.8rem;font-weight:600}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.no{background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+.pill.mid{background:var(--warn-soft);color:var(--warn)}
+.panel.lesson{max-width:820px}
+.panel h2{font-size:1.25rem;margin:24px 0 8px}
+.panel p.body{margin:0 0 12px;max-width:66ch}
+.fig{margin:0 0 6px}
+.fig svg{display:block;width:100%;height:auto;background:var(--surface2);border:1px solid var(--line);border-radius:12px}
+.fig figcaption{font-size:.88rem;color:var(--muted);margin-top:6px}
+.fig svg text{font-family:var(--body)}
+.fig svg .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.fig .b{font-weight:700}
+.gcard,.gsoft{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.gteal{fill:var(--teal)} .gsig{fill:var(--signal)}
+.gtsoft{fill:var(--teal-soft);stroke:var(--teal);stroke-width:1.5}
+.gbad{fill:var(--bad-soft);stroke:var(--bad);stroke-width:1.5}
+.gok{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
+.gwarn{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.5}
+.gl,.glb,.glo{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.gl{stroke:var(--muted)} .glb{stroke:var(--bad)} .glo{stroke:var(--ok)}
+.gfm{fill:var(--muted)} .gfb{fill:var(--bad)} .gfo{fill:var(--ok)} .gfw{fill:var(--warn)}
+.fig .tx{fill:var(--text)} .fig .tm{fill:var(--muted)} .fig .tw{fill:var(--teal-ink)} .fig .ts{fill:var(--signal-ink)}
+.fig .tb{fill:var(--bad)} .fig .tg{fill:var(--ok)} .fig .tn{fill:var(--warn)}
+.example{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:4px 0 6px;max-width:66ch}
+.example b{display:block;margin-bottom:4px}
+.dd{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 22px}
+.dd>div{border-radius:10px;padding:12px 14px}
+.dd .do{background:var(--ok-soft);border-left:5px solid var(--ok)}
+.dd .dont{background:var(--bad-soft);border-left:5px solid var(--bad)}
+.dd ul{margin:6px 0 0;padding-left:1.1rem}
+.dd li{margin-bottom:5px}
+@media (max-width:1020px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.dd{grid-template-columns:1fr}.board{grid-template-columns:1fr}.who input{min-width:0;width:100%}.who label{flex:1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ============ CONTENT ============
+   Question format: [question, CORRECT answer, wrong, wrong, wrong, explanation]
+   The correct answer is always listed first here; order is shuffled when shown. */
+const BRAND = "Security Awareness Training";
+const CUSTOMER = "GrowthHouse"; // per-customer branding
+try{ document.title = (CUSTOMER ? CUSTOMER + " — " : "") + BRAND; }catch(e){}
+const PASS_MARK = 2; // correct answers needed out of 3 to pass a topic
+
+const MODULES = [
+{ id:"email", name:"Email", topics:[
+ { id:"phishing", title:"Phishing",
+   intro:"Phishing is a message that pretends to be someone you trust so you will click, log in, pay or reveal something.",
+   points:["Common signs: urgency or threats, an unexpected request, a generic greeting, and a link that goes somewhere other than where it claims.","The display name can say anything. Check the actual sender address, and hover over links before you click.","Never use the link in the message to verify it. Open the service yourself, or call a number you already trust.","Report suspicious mail using your company process. Do not forward it to colleagues."],
+   tip:"If a message makes you feel rushed or scared, that feeling is the attack. Stop and verify through a separate channel.",
+   qs:[
+    ["An email from your bank says your account is suspended unless you confirm your details within 24 hours. What should you do?","Open your bank's app or type its address yourself, or call the number on your card, and report the email","Click the link and log in quickly so the account is not suspended","Reply to the email asking if it is genuine","Forward it to colleagues to see what they think","Real banks do not demand credentials by link under time pressure. Going to the bank yourself bypasses the attacker completely."],
+    ["Which is the strongest warning sign in an email?","The display name looks right but the sender address uses an unrelated domain","The email contains a company logo","It arrived early in the morning","It ends with a standard signature","Logos and signatures are trivial to copy. A mismatched sender domain is much harder to fake convincingly."],
+    ["You clicked a link and typed your password into the page before realising it was fake. What is the right next step?","Change that password right away and tell IT or your provider immediately","Close the page and carry on, since nothing visibly happened","Wait a few days to see if anything strange occurs","Delete the email so nobody finds out","Speed matters. Reporting early lets someone block the attacker before they use your login."]
+   ]},
+ { id:"attachments", title:"Email Attachments",
+   intro:"Attachments are one of the most common ways malware arrives. A known sender does not guarantee a safe file.",
+   points:["Higher-risk files: Office documents asking to enable macros, ZIP and ISO archives, HTML files, and anything with a double extension such as invoice.pdf.exe.","If a document says you must enable content or macros to view it, close it. That prompt is the trick.","Accounts get hijacked. A message from a real supplier can still be malicious, especially if it is brief and unexpected.","Confirm unexpected attachments with the sender using a different channel, such as a phone call."],
+   tip:"Ask two questions: did I expect this, and does it make sense for this person to send it? If either answer is no, verify first.",
+   qs:[
+    ["Which attachment is most suspicious?","invoice.pdf.exe","Quarterly-report.xlsx that a colleague told you to expect","A photo from a family member you were just chatting with","Meeting-minutes.docx from your manager after today's meeting","A file whose real ending is .exe is a program disguised as a PDF. The others fit a context you can explain."],
+    ["A Word document opens with a banner telling you to enable macros to see the content. What do you do?","Close it and check with the sender through another channel","Click Enable Content, since you need to read it","Enable macros but turn off Wi-Fi first","Forward it to a colleague to open instead","Macros can run code on your device. Legitimate documents rarely need them just to be readable."],
+    ["A supplier you know emails an unexpected ZIP file with the message 'see attached'. Why is this still risky?","Their mailbox may have been compromised, so a familiar sender does not prove the file is safe","ZIP files are always illegal to open","Suppliers never send attachments","It is only risky if the email is long","Attackers often take over real accounts and send malware to the victim's contacts."]
+   ]},
+ { id:"spam", title:"Spam",
+   intro:"Spam is unwanted bulk email. Much of it is harmless clutter, but a lot is scams or a delivery route for malware.",
+   points:["Do not reply to spam or click Unsubscribe on messages from senders you do not know. It confirms your address is active.","Unsubscribing is fine for newsletters you actually signed up to.","Use the Report spam or Junk button so filters learn.","Use a separate address for online sign-ups and keep your work address off public sites."],
+   tip:"Treat spam as a signal. A spam message that slips through is a good example to report, not to read.",
+   qs:[
+    ["You receive a marketing email from a company you have never heard of, with an Unsubscribe link. Best action?","Mark it as junk or spam and delete it","Click Unsubscribe to be removed","Reply asking them to stop","Click the link to see what the offer is","Unsubscribe links in spam often just confirm that your address works, leading to more spam."],
+    ["Why is replying to a spam message a bad idea?","It confirms your mailbox is active and monitored by a person","It uses up your mailbox storage","It automatically infects your device","It is illegal to reply","A reply tells the sender they have found a live address worth targeting again."],
+    ["Which habit reduces how much spam you receive?","Using a separate address for online sign-ups","Posting your email address on your public profile","Using your work address for competitions","Loading all images in every email","The fewer places your real address appears, the fewer lists it ends up on."]
+   ]}
+]},
+{ id:"internet", name:"Internet Safety", topics:[
+ { id:"wifi", title:"Public Wi-Fi",
+   intro:"Anyone can set up a Wi-Fi network with a friendly name. Public hotspots are convenient but you cannot know who runs them.",
+   points:["Attackers can copy a real network name to trick you into joining a fake one, known as an evil twin.","Traffic on open networks can be watched or altered. HTTPS helps, but it does not cover everything.","Safer options: your phone's mobile hotspot, or a company-approved VPN.","Turn off automatic joining of networks and file sharing on your devices."],
+   tip:"If you must use public Wi-Fi, keep to low-risk browsing and avoid banking or admin logins.",
+   qs:[
+    ["At an airport you see two networks, 'Airport_Free_WiFi' and 'Airport Free WiFi'. What is the safest approach?","Ask staff for the exact network name, or use your own mobile data","Join the one with the stronger signal","Join both to compare speeds","It does not matter, they are the same","Copycat network names are a classic trap. Confirm with a trusted source."],
+    ["You need to access your online banking while in a coffee shop. What is best?","Use your phone's mobile data or hotspot","Use the cafe Wi-Fi since the site has a padlock","Use the cafe Wi-Fi but only briefly","Ask the person next to you which Wi-Fi to use","Your own mobile connection avoids trusting an unknown network."],
+    ["Which setting reduces your risk on public networks?","Turn off auto-join for networks and turn off file sharing","Leave auto-join on so you connect faster","Keep file sharing on in case someone needs a file","Disable your screen lock","Auto-join can connect you to a fake network with a familiar name without you noticing."]
+   ]},
+ { id:"https", title:"HTTPS",
+   intro:"The padlock in your browser means your connection to the site is encrypted. It does not mean the site is honest.",
+   points:["Criminals can and do get certificates for fake sites, so a padlock on a phishing page is common.","Read the real domain carefully. In https://login.example.com.evil.xyz/ the real domain is evil.xyz.","Never click through a browser certificate warning on a site where you log in or pay.","Do not enter passwords or card details on pages that start with http:// and show Not secure."],
+   tip:"Padlock answers 'is the line private?'. It does not answer 'who am I talking to?'.",
+   qs:[
+    ["A website shows a padlock. What does this tell you?","The connection is encrypted, but not that the site is trustworthy","The site is owned by a real, legitimate company","The site is free of malware","Any password entered will be safe","Encryption protects data in transit. A scam site can have it too."],
+    ["Your browser shows a full-page security warning when opening your company's login portal. What do you do?","Stop, do not proceed, and report it to IT","Click Advanced and continue, since you know the site","Try a different browser until the warning goes away","Ignore it, these warnings are usually wrong","A certificate error on a login page can mean someone is intercepting your connection."],
+    ["Which address is the genuine Microsoft sign-in page?","https://login.microsoftonline.com/","https://login.microsoftonline.com.account-check.xyz/","https://microsoftonline-login.com/","https://secure.login-microsoftonline.net/","The real domain is the part immediately before the first single slash. The other options belong to different domains."]
+   ]},
+ { id:"filtering", title:"Web Content Filtering",
+   intro:"Web filtering blocks known dangerous or inappropriate sites before you reach them. It is one layer of protection, not a guarantee.",
+   points:["Filters use lists and live intelligence to block malicious, phishing and unsuitable categories.","They reduce risk but cannot catch everything, so your judgement still matters.","If a legitimate site is blocked, ask IT to review it instead of working around the block.","Personal VPNs and proxies used to bypass filtering remove protection and visibility."],
+   tip:"A block message is the system working. Report false blocks, never bypass them.",
+   qs:[
+    ["A website you need for work is blocked. What should you do?","Ask IT to review the block","Switch to your personal mobile hotspot to get around it","Install a free proxy extension","Ask a colleague to open it for you","Reviewing lets the site be approved properly if safe, and keeps the protection in place for everyone."],
+    ["Which statement about web filtering is correct?","It is one layer of defence and does not replace careful behaviour","It guarantees you can never visit a harmful site","It makes training unnecessary","It only matters for adult content","No single control is perfect. Filtering lowers risk while your habits cover the gaps."],
+    ["Why is using an unapproved VPN to bypass filtering risky?","It removes security controls and exposes your traffic to the VPN provider","VPNs are always slower","It uses more data","It is only risky on weekends","Bypassing the filter removes the protection and may send your browsing through an untrusted third party."]
+   ]},
+ { id:"search", title:"Search Engine Safety",
+   intro:"Search results can be poisoned. Criminals buy ads and build fake sites that look like the real download, login or help page.",
+   points:["Ads at the top of results are labelled Sponsored. They can be malicious even when they look official.","For software, go to the vendor's official site or your device's app store.","Be careful searching for support phone numbers. Fake numbers are common in results.","Bookmark the sites you log in to often so you are not searching for them each time."],
+   tip:"For anything involving money, logins or downloads, go straight to a bookmarked or typed address.",
+   qs:[
+    ["You search for a free PDF tool. The top result is a Sponsored ad for 'free-pdf-download-now.com'. Best action?","Go directly to the official vendor website or an official app store","Click the ad since it is the first result","Download from whichever result offers the newest version","Click the ad but decline any pop-ups","Malicious ads often mimic real downloads. Going to the source avoids the imitation."],
+    ["Why is it risky to search for your bank's helpline and call the first number shown?","Results can include fake pages and ads with scammer numbers","Search engines show the wrong time","Phone calls are always recorded","Banks do not have helplines","Use the number printed on your card or statement, not one found through a search."],
+    ["Which habit is safest for frequently used logins?","Use bookmarks you created yourself","Search for the site each time and click the first result","Click links in your email","Use whichever site appears in an ad","A bookmark takes you to the same trusted address every time."]
+   ]}
+]},
+{ id:"threats", name:"Personalized Threats", topics:[
+ { id:"social", title:"Social Engineering",
+   intro:"Social engineering manipulates people rather than computers. It works by pushing emotions such as urgency, fear, helpfulness and trust in authority.",
+   points:["Channels: email, phone calls, text messages, social media and in-person visits.","Typical stories: the boss who needs gift vouchers urgently, IT support who needs your code, a supplier who has changed bank details.","Any request for money, credentials or one-time codes needs verifying through a number or channel you already know.","Polite challenging is normal and professional. Real people will understand."],
+   tip:"Authority plus urgency plus secrecy is the standard recipe. If you see all three, stop.",
+   qs:[
+    ["A caller says they are from IT and asks for the verification code you just received by SMS. What do you do?","Refuse, hang up, and call IT back on a number you already have","Read the code since they know your name","Give only the first three digits","Ask them to email you the request","Verification codes are never shared with anyone. Knowing your name proves nothing."],
+    ["An email apparently from your CEO urgently asks you to buy gift vouchers and keep it confidential. What stands out?","Authority, urgency and secrecy together","The email is short","It came during working hours","It asks for something simple","This combination is a textbook business-email-compromise pattern. Verify by phone."],
+    ["Someone in a courier uniform follows you through a secure door without scanning in. What is the best response?","Politely ask who they are visiting and direct them to reception","Hold the door, they look official","Ignore them and walk on","Give them your access card to save time","Tailgating relies on politeness. Redirecting to reception is polite and safe."]
+   ]},
+ { id:"insider", title:"Insider Threats",
+   intro:"An insider threat is a risk that comes from people with legitimate access: employees, contractors or compromised accounts. Most incidents are mistakes, not malice.",
+   points:["Types: negligent (mistakes and shortcuts), malicious (deliberate harm or theft) and compromised (an attacker using a real person's account).","Common accidents: emailing the wrong recipient, sharing passwords, using personal storage for business data.","Least privilege limits damage: people only get access they need for their job.","Report concerning behaviour early through the agreed channel. Do not investigate or confront it yourself."],
+   tip:"Good security culture makes reporting normal and blame-free, so small problems are caught before they grow.",
+   qs:[
+    ["Which kind of insider incident is generally most common?","Accidental or careless mistakes","Deliberate sabotage by a disgruntled employee","Foreign intelligence agents","Insiders using stolen laptops in public","Most insider incidents come from errors and shortcuts, which is why training and simple processes matter."],
+    ["Which control best reduces the damage an insider can do?","Least privilege, giving people only the access they need","Giving everyone administrator access","Sharing one login across the team","Removing audit logs","The less access an account has, the less harm a mistake or misuse can cause."],
+    ["You see a colleague who is about to leave copying a large client database to a personal USB drive. What do you do?","Report it through the agreed channel without confronting them","Ignore it, it is not your business","Confront them in front of others","Join in so you also have a copy","Reporting lets the right people assess it properly. Confrontation can make things worse."]
+   ]}
+]},
+{ id:"malware", name:"Malware", topics:[
+ { id:"types", title:"Types of Malware",
+   intro:"Malware is any software built to harm, spy on or take control of a device. Knowing the main types helps you recognise the symptoms.",
+   points:["Ransomware encrypts files and demands payment to restore them.","Trojans pretend to be legitimate software, such as cracked games or fake installers, while giving attackers access.","Spyware, infostealers and keyloggers quietly capture passwords, keystrokes and browser data.","Worms spread by themselves across networks. Botnets turn many infected devices into a remote-controlled army."],
+   tip:"Symptoms vary, and some malware shows none. Prevention and early reporting beat clean-up.",
+   qs:[
+    ["Your files will not open and a message demands payment for a decryption key. This is most likely:","Ransomware","Adware","A harmless software bug","Spam","Encrypting files and demanding payment is the defining behaviour of ransomware."],
+    ["A free cracked game installs fine but also gives an attacker remote access. What type of malware is this?","A trojan","A worm","A firewall","A cookie","A trojan hides inside something that looks useful or legitimate."],
+    ["Software secretly records everything you type, including passwords. What is it called?","A keylogger, a type of spyware","A rootkit scanner","A backup tool","A search engine","Keyloggers capture keystrokes and send them to the attacker."]
+   ]},
+ { id:"targets", title:"Malware Targets",
+   intro:"Attackers do not only go after large companies. Much malware is automated and finds whoever is easiest.",
+   points:["Small and medium businesses are attractive because defences are often weaker and operations depend on data.","Prized targets: logins, financial details, client data, and anything that lets attackers disrupt you and demand money.","Targets are not only laptops: phones, servers, routers, printers, cameras and other connected devices are all used.","Regular updates, tested backups and good habits make the biggest difference."],
+   tip:"You do not need to be interesting. You only need to be reachable and unprepared.",
+   qs:[
+    ["A colleague says, 'We are too small for criminals to bother with us.' What is the accurate response?","Automated attacks hit any business, and smaller ones are often easier targets","They are right, small businesses are rarely attacked","Only banks need to worry","Attackers prefer well-defended networks","Most attacks are opportunistic scans and mass campaigns, not hand-picked victims."],
+    ["Which of these is commonly overlooked as a malware target?","Printers, routers and other connected devices","Only desktop computers","Paper files","Office furniture","Internet-connected devices often run old software and are rarely monitored."],
+    ["Why is business data valuable to criminals?","It can be stolen, sold, or held to ransom","It is always worthless to outsiders","It cannot be copied","It expires daily","Stolen data and locked systems both turn into money for attackers."]
+   ]},
+ { id:"delivery", title:"How Malware Gets to You",
+   intro:"Malware needs a way in. Most of the time that way in is a person, not a technical break-in.",
+   points:["Phishing links and attachments, malicious ads, and fake software updates or pop-ups.","Cracked software and downloads from unofficial sites.","Unknown USB drives, plus old software with known flaws that has not been patched.","Defences: install updates, download only from official sources, avoid admin accounts for daily work, and keep protection running."],
+   tip:"Updates are not an annoyance. They close the holes that malware uses.",
+   qs:[
+    ["A pop-up says 'Your browser is out of date, click to update now'. What should you do?","Close it and update through the browser's own settings or IT","Click the button, updates are important","Click Allow on the notification","Enter your password to confirm","Fake update prompts are a common delivery method. Real updates come from the software itself."],
+    ["You find a USB drive in the car park. What should you do?","Hand it to IT and do not plug it in","Plug it in to find the owner","Plug it into an old computer","Take it home to check","Dropped USB drives are a known attack technique."],
+    ["Why do software updates matter for security?","They fix known vulnerabilities that malware can exploit","They make the computer look newer","They remove the need for passwords","They only add new features","Many attacks use flaws that already have a fix available."]
+   ]}
+]},
+{ id:"passwords", name:"Passwords", topics:[
+ { id:"personal", title:"Personal Info in Passwords",
+   intro:"Names, birthdays, pets and teams feel memorable, and that is exactly why they are easy to guess or find online.",
+   points:["Attackers check social media for names, dates, pets, schools and favourite teams.","Predictable patterns such as Summer2026! or Name1985 are among the first guesses.","Use a long passphrase of unrelated words, or let a password manager generate random passwords.","Treat answers to security questions like passwords. Do not give real, findable answers."],
+   tip:"If someone could learn it from your public profile, it does not belong in your password.",
+   qs:[
+    ["Which password is the weakest?","Bella1987!","plum-ladder-ocean-teapot","T7#kq9Lz$vR2mW","correct-spade-lantern-mild-ferry","A pet name and a year is easy for an attacker to guess or discover. The others are long or random."],
+    ["Why is using personal details in a password risky?","They can often be found on social media or in public records","They are too long to remember","Websites do not allow them","They slow down your device","Attackers research their targets, and tools try personal details first."],
+    ["The security question asks for your mother's maiden name. What is the safest approach?","Enter a random answer and store it in your password manager","Enter the real answer","Enter your pet's name","Skip all security questions","Real answers can be researched. A random answer cannot."]
+   ]},
+ { id:"hygiene", title:"Password Hygiene",
+   intro:"Good password habits are simple: make them long, make them unique, and never share them.",
+   points:["Use a different password for every account. Reuse lets one breach unlock many accounts, known as credential stuffing.","Length beats complexity. Aim for at least 14 characters or a passphrase.","Do not share passwords or write them on notes stuck to a screen.","Change a password when you suspect it has been exposed, and check for breaches using a service such as Have I Been Pwned."],
+   tip:"If you remember all your passwords, they are probably too weak or reused.",
+   qs:[
+    ["What is the main risk of using one password across many accounts?","A breach of one site gives attackers access to the others","It makes the password too long","The password expires faster","Websites will block you","Attackers try leaked passwords on other services automatically."],
+    ["When should you change a password straight away?","When you suspect or know it has been exposed","Every Monday","Only when you forget it","Never","Prompt changes after a suspected leak matter more than changing for the sake of a schedule."],
+    ["Which is the better password guidance?","Long and unique, such as a passphrase of 14 or more characters","Short with many symbols","One strong password for everything","A word followed by a number","Length is the biggest driver of strength, and uniqueness limits the damage of breaches."]
+   ]},
+ { id:"manager", title:"Password Management",
+   intro:"A password manager creates, stores and fills in strong unique passwords so you only need to remember one.",
+   points:["It can generate random passwords and fill them in only on the matching website, which also helps expose fake login pages.","Protect it with a long master passphrase and multi-factor authentication.","Spreadsheets, notes apps and sticky notes are not safe places for passwords.","Use a shared vault for team credentials rather than sending passwords in chat or email."],
+   tip:"If your manager does not offer to fill a login, pause. The site might not be the one you think.",
+   qs:[
+    ["Where is the best place to keep your passwords?","A reputable password manager","A spreadsheet called passwords on your desktop","A note on your phone","An email to yourself","A manager encrypts your passwords and fills them securely."],
+    ["Your password manager does not autofill on a login page you expected it to. What might this mean?","The page may be a fake with a different address","The manager is broken and you should type the password manually","The password has expired","Your internet is slow","Managers match the exact address. No match is a useful warning."],
+    ["What is most important to protect in a password manager?","The master password, ideally with multi-factor authentication","The browser icon","The list of website names","Your username only","Everything in the vault depends on the master login."]
+   ]},
+ { id:"mfa", title:"Two-factor Authentication",
+   intro:"Two-factor (or multi-factor) authentication adds a second proof of identity, so a stolen password alone is not enough.",
+   points:["Stronger to weaker: passkeys or hardware keys, authenticator apps, then SMS codes.","Never share a one-time code or approve a prompt you did not start. Repeated prompts are an attack called MFA fatigue.","Store backup codes somewhere safe and offline.","Turn it on for email first, because email can reset almost every other account."],
+   tip:"An unexpected approval request means someone else has your password. Deny it and change the password.",
+   qs:[
+    ["Your phone keeps showing sign-in approval requests that you did not trigger. What do you do?","Deny them, change your password and report it","Approve one so they stop","Ignore the phone","Turn off two-factor to stop the prompts","Prompts you did not trigger mean someone has your password. Approving gives them in."],
+    ["Which method is generally the strongest?","A passkey or hardware security key","SMS code","Security question","Email a password to yourself","Passkeys and hardware keys resist phishing in a way codes cannot."],
+    ["Which account should you secure with two-factor first?","Your email","A shopping site you rarely use","A loyalty card","A newsletter subscription","Control of your email lets an attacker reset your other accounts."]
+   ]}
+]},
+{ id:"phishtech", name:"Phishing Techniques", topics:[
+ { id:"malware-attach", title:"Malware Attachment",
+   intro:"A malware attachment is a phishing message that carries a malicious file. The mail gives you a reason to open it, and opening the file runs code that can infect your device.",
+   points:["The file is disguised as something routine: an invoice, a statement, a voicemail, a shared document or a CV.","Office files may ask you to Enable Content or Enable Editing. That prompt exists to run a macro, not to show you the document.","Password-protected ZIPs are common, because the password in the email lets the file slip past scanners that cannot look inside.","A real, known sender is not proof. Hijacked mailboxes send malware to the sender's own contacts."],
+   tip:"If a file needs you to enable, unblock or allow something just to read it, that request is the attack. Close it and verify.",
+   qs:[
+    ["An email you did not expect carries a file called Voicemail.html and asks you to open it to hear a message. What is the safest response?","Do not open it, and report the message through your reporting process","Open it, since voicemails are normal at work","Open it on your phone instead of your laptop","Forward it to a colleague to check for you","Unexpected HTML attachments are a common malware and credential-theft route. Opening it elsewhere or forwarding it just spreads the risk."],
+    ["A document opens blurred with a banner saying 'Enable Content to view'. What is actually happening?","The banner is trying to get you to run a macro that can install malware","The document is genuinely protected and needs unlocking","Your Office licence has expired","The file is too large to display","Legitimate documents do not need macros just to be readable. The prompt is the trick."],
+    ["Why is a password-protected ZIP attachment a particular concern?","The password lets the malicious file bypass scanners that cannot inspect encrypted archives","ZIP files cannot contain malware","Password-protected files are always safe","It means the sender is verified","Encryption hides the contents from security tools, so the payload reaches you unscanned."]
+   ]},
+ { id:"cred-harvest", title:"Credential Harvest",
+   intro:"A credential harvest sends you to a convincing fake login page. Whatever you type, usually your email and password, goes straight to the attacker.",
+   points:["The page is a pixel-perfect copy of a sign-in you know: Microsoft 365, your bank, a courier, a document portal.","The trigger is usually a link: a shared file, a locked account, a held parcel, a new voicemail or payslip.","Read the real domain, the part just before the first single slash. login.microsoftonline.com is genuine; login.microsoftonline.com.verify.xyz is not.","Your password manager helps: it will not autofill a password on a look-alike address, and that silence is a warning."],
+   tip:"Never sign in from a link in a message. Open the service from a bookmark or by typing the address, and let MFA back you up.",
+   qs:[
+    ["A link in an email opens a perfect Microsoft 365 sign-in page asking for your work password. What should you do?","Close it, open the service from a bookmark, and report the email","Enter your password, since the page looks exactly right","Enter a wrong password first to test if it is real","Enter your password but change it next week","Fake sign-in pages are exact copies. Looking right proves nothing; reaching it from a message is the red flag."],
+    ["Which address is the genuine Microsoft sign-in page?","https://login.microsoftonline.com/","https://login.microsoftonline.com.secure-verify.xyz/","https://microsoft-365-login.com/","https://login.microsoft.account-check.net/","The real owner is the domain just before the first single slash. The others belong to different domains."],
+    ["You entered your password on a page that turned out to be fake. What is the right first step?","Change that password immediately and report it to IT so the account can be protected","Do nothing, as long as you close the tab quickly","Wait to see whether anything unusual happens","Just enable MFA and keep the same password","Speed limits the damage. Reporting early lets IT force a sign-out, reset the password and check for misuse."]
+   ]},
+ { id:"driveby", title:"Drive-by URL",
+   intro:"A drive-by URL takes you to a web page that silently runs code in your browser to probe or infect your device. Often you do not have to click anything on the page itself.",
+   points:["The landing page may look blank, show a fake error, or imitate a familiar site while it works in the background.","It targets out-of-date browsers, plugins and operating systems, which is why prompt updates matter so much.","A shortened or redirecting link can hide the real destination until you are already there.","Keeping browsers patched and web filtering on stops most of these before the page loads."],
+   tip:"The protection you cannot see, patched software and web filtering, is what blocks a page that attacks on arrival. Keep both current.",
+   qs:[
+    ["How does a drive-by URL typically infect a device?","By running code in the browser when the page loads, often exploiting outdated software","Only if you download and run a file","Only if you type your password","By sending a text message to your phone","Drive-by pages exploit unpatched browsers and plugins automatically, without needing a download or a login."],
+    ["Which habit best reduces the risk from drive-by pages?","Keep your browser and operating system updated and leave web filtering on","Use an older browser that loads pages faster","Disable automatic updates to avoid interruptions","Turn off the web filter when a page is blocked","Patches close the flaws these pages exploit, and filtering blocks known-bad sites before they load."],
+    ["A link is a shortened URL you cannot read, sent unexpectedly. Why is this riskier?","The real destination is hidden until you arrive, so you cannot judge it first","Shortened links are always malware","It will use more mobile data","Short links cannot be filtered","Hiding the destination removes your chance to spot a bad domain before the page opens."]
+   ]},
+ { id:"link-in-attach", title:"Link in Attachment",
+   intro:"A link in attachment hides a phishing link inside a file, such as a PDF, Word document or image. The email body looks clean, so filters and a quick glance may pass over it. The trap is one click deeper.",
+   points:["Putting the link inside a file helps the message get past scanners that only check the email body for bad links.","The attached file usually shows a button or image, 'View document', 'Open in OneDrive', 'Review invoice', that leads to a fake login or malware.","The same rules apply inside a file as in an email: check where the link really goes before you click.","Be extra cautious with unexpected PDFs that ask you to click through to sign in or view a secured document."],
+   tip:"A clean-looking email with one attachment can still be phishing. Judge the link inside the file, not just the message around it.",
+   qs:[
+    ["A PDF from an unexpected email shows a big 'View secure document' button that opens a Microsoft 365 login. What is this most likely?","A link-in-attachment phish, using the file to hide a fake sign-in page","A genuine secure document portal","A broken PDF that needs re-sending","A harmless marketing attachment","Burying the link in a PDF helps it dodge link scanning. The sign-in it opens is the credential trap."],
+    ["Why do attackers place the link inside an attachment rather than in the email body?","It can slip past filters that scan the message body for malicious links","Links only work inside PDFs","It makes the email load faster","Attachments cannot be reported","Moving the link into a file reduces the chance that email security flags it."],
+    ["You open an attached document and it asks you to click a link to sign in and view the content. Best action?","Do not click; open the real service from a bookmark and report the message","Click the link, since the document is already open","Sign in quickly before the link expires","Save the file and click the link tomorrow","The link inside the file deserves the same suspicion as a link in the email. Reach the service yourself instead."]
+   ]},
+ { id:"link-to-malware", title:"Link to Malware",
+   intro:"A link to malware points to a file hosted on a trusted-looking service such as SharePoint, OneDrive, Dropbox or Google Drive. The message carries no attachment, so it slips past attachment scanning. The download is the payload.",
+   points:["Hosting the file on a well-known service borrows that service's good reputation and avoids sending the file through email.","The link often leads to a familiar file-share page, then to a download that is actually malware.","A trusted hosting brand does not make the file safe. Judge whether you expected this file from this person.","Confirm unexpected shared files with the sender through a separate channel before downloading."],
+   tip:"A SharePoint or Dropbox link is not a safety badge. The question is the same: did I expect this file, and does it make sense?",
+   qs:[
+    ["You get an unexpected link to a file on a well-known cloud storage service. Why is a trusted host not reassurance?","Anyone can host a malicious file there; the brand does not vouch for the file","Those services scan and guarantee every file","Links to cloud storage cannot carry malware","It is only risky if there is also an attachment","Attackers use reputable hosts precisely to look trustworthy and avoid email attachment scanning."],
+    ["What is the safest way to handle an unexpected shared-file link, even from a known sender?","Confirm with the sender through a separate channel before opening or downloading","Download it immediately since the host is reputable","Open it only on your phone","Forward it to a colleague to open first","A quick check by phone or chat catches a hijacked account or spoofed sender before the file runs."],
+    ["Why does hosting malware on a file-sharing site help the attacker get past email security?","No file is attached to the email, so attachment scanning has nothing to inspect","File-sharing sites are exempt from the law","Email filters ignore all links","The file becomes smaller","With the payload hosted elsewhere, the email itself looks clean to attachment scanners."]
+   ]},
+ { id:"oauth-consent", title:"OAuth Consent Grant",
+   intro:"An OAuth consent grant tricks you into approving a third-party app's request to access your account. There is no password to steal: you hand over access by clicking Accept, and the attacker keeps it even after you change your password.",
+   points:["The prompt is a real sign-in and consent screen, often from a genuine provider, so there is no fake page to spot.","Warning signs: an app you do not recognise, asking for broad permissions such as read your mail, send mail, or access your files, often 'on your behalf' and even 'while you are not using the app'.","Because it grants a token rather than capturing a password, changing your password does not revoke it. Access has to be removed from the account's connected apps.","Grant access only to apps you deliberately set up and trust, and read exactly what an app is asking to do before you click Accept."],
+   tip:"Read the permissions, not just the logo. If you did not go looking for this app, do not consent, and report it.",
+   qs:[
+    ["A consent screen asks you to let an unfamiliar app read and send your email 'on your behalf'. What should you do?","Decline, and report it, since you did not set up this app","Accept, because the sign-in page is genuine","Accept, then change your password afterwards to be safe","Accept the read permission but not the send permission","Broad permissions for an app you did not request are a classic OAuth abuse. Changing your password does not undo a granted token."],
+    ["Why is an OAuth consent attack dangerous even though no password is stolen?","It grants the attacker a lasting access token that survives a password change","It is harmless because passwords are untouched","It only works if MFA is off","It expires the moment you sign out","Consent issues a token tied to the app, not your password, so the access remains until it is explicitly revoked."],
+    ["How is access from a malicious consent grant actually removed?","By revoking the app's access in the account's connected or enterprise applications, usually with IT","By changing your password","By clearing your browser cookies","By turning your computer off and on","The token lives with the app's granted permissions, so it must be revoked from the account's app access, not reset like a password."]
+   ]}
+]}
+];
+
+/* ============ LESSON EXTRAS: long-form content ============ */
+const EXTRA = {
+phishing:{
+  cap:"Four things to check on any suspicious email.",
+  how:["Phishing works because it looks routine. Attackers copy a real brand's logo and tone, then add a reason to act now: a locked account, an unpaid invoice, a parcel that cannot be delivered. The link leads to a fake page that captures whatever you type, or quietly installs malware.","There are variants worth knowing. Spear phishing is written for one person using details found online. Smishing arrives by SMS and vishing by phone call. A QR code in an email can hide a fake link just as well as text can."],
+  example:"Thandi in accounts gets an email that looks like it is from her company's courier: 'Delivery failed, pay R35 to reschedule.' The sender address is almost right and the page asks for card details. She doesn't click. She opens the courier's own website, finds no failed delivery, and reports the email.",
+  dos:["Check the sender address, not just the display name","Hover over links to see where they really go","Report the message, then delete it"],
+  donts:["Click links or scan QR codes in unexpected messages","Reply to the email or forward it to colleagues","Type a password into a page you reached from an email"]},
+attachments:{
+  cap:"Three files that look ordinary. Two of them are not.",
+  how:["Malicious files rarely look dangerous. Attackers hide programs inside invoices, voicemails, shared-document notices and password-protected ZIPs (the password is in the email, so scanners cannot look inside). Office files can contain macros, which are small programs that run once you click Enable.","Windows often hides file extensions, so invoice.pdf.exe can appear as invoice.pdf. Turning on 'show file extensions' makes the real file type visible."],
+  example:"A supplier's mailbox is hijacked and the criminal replies inside a genuine email thread with 'updated statement attached'. The thread is real, so it feels safe. The file is a .docm that asks for macros. A one-minute phone call to the supplier shows they never sent it.",
+  dos:["Turn on file extensions in Windows","Confirm unexpected files by phone or chat","Open documents in preview mode where you can"],
+  donts:["Enable macros or content because a document asks you to","Open ZIP, ISO or HTML files you did not expect","Assume a known sender means a safe file"]},
+spam:{
+  cap:"Filters catch most of it. Your reports help catch the rest.",
+  how:["Spam is sent in bulk because it costs almost nothing. Even if one person in ten thousand responds, the sender profits. Lists are built from data breaches, scraped websites, and guesses at common address formats.","Filters stop most spam, but some gets through, and the filter learns from what you report. Every message you flag helps protect you and your colleagues."],
+  example:"Sipho enters a competition using his work email. Within weeks he is getting messages about prizes, crypto investments and 'unpaid invoices'. From then on he uses a separate personal address for sign-ups and reports each junk message instead of opening it.",
+  dos:["Use Report spam or Junk","Keep a separate address for online sign-ups","Unsubscribe only from senders you recognise"],
+  donts:["Reply, even to say stop","Click links or load images in unknown mail","Publish your work email address on public pages"]},
+wifi:{
+  cap:"The fake network looks almost identical. Everything you send passes through the attacker.",
+  how:["A Wi-Fi network name is just text. Attackers set up a hotspot with a familiar name and wait for devices to join, often because a phone connected automatically. From there they can watch unprotected traffic, redirect you to fake sign-in pages or show fake prompts.","HTTPS protects the content of many connections, but the attacker can still see which sites you visit, and fake pages can use HTTPS too. The safest choice is not to trust the network at all and use your own mobile data."],
+  example:"A guest at a conference joins 'Conference_Guest_2'. The real network was 'Conference_Guest'. A sign-in page appears asking for their work email and password. Entering them hands those details straight to the person who set up the fake network.",
+  dos:["Use your phone's hotspot for anything sensitive","Confirm the exact network name with staff","Turn off auto-join and file sharing"],
+  donts:["Log in to banking or admin systems on public Wi-Fi","Enter work passwords on a sign-in page the network shows you","Click through certificate warnings"]},
+https:{
+  cap:"Only one part of the address tells you who you are really talking to.",
+  how:["HTTPS encrypts the connection between your browser and a website, so others on the network cannot read what you send. That matters, but it says nothing about who owns the site. Certificates are cheap and automatic, which is why many phishing sites show a padlock.","The part that identifies the site is the registered domain: the name just before the first single slash. Anything to the left of it is a subdomain, which the owner of the domain can set to whatever they like."],
+  example:"An email links to https://login.microsoftonline.com.account-check.xyz/. It has a padlock and starts with the right words. But the owner of the address is account-check.xyz, and the Microsoft part is only a subdomain the attacker chose.",
+  dos:["Read the domain just before the first single slash","Type or bookmark addresses for important sites","Stop at certificate warnings and report them"],
+  donts:["Treat the padlock as proof the site is trustworthy","Click through browser security warnings","Enter card details on pages that start with http://"]},
+filtering:{
+  cap:"The filter checks each site before the page opens.",
+  how:["Web filters sit between your device and the internet. They check each site against category lists and live threat intelligence. Known phishing pages, malware downloads and newly registered suspicious sites can be blocked before the page loads. Some filters work through DNS and others through software on the device, so they can protect you at home as well as in the office.","No filter is perfect. New malicious sites appear every hour, and legitimate sites are sometimes blocked by mistake. That is why the rule is simple: do not bypass it, and do ask for a review."],
+  example:"A staff member taps a link in a text message. The filter shows a block page saying the site is a known phishing page. Nothing is entered and nothing is downloaded, and IT can see that someone in the business is being targeted.",
+  dos:["Report false blocks so they can be reviewed","Treat a block page as a useful warning","Keep protection running on laptops used away from the office"],
+  donts:["Use personal VPNs or proxies to get around a block","Ask a colleague to open a blocked site for you","Switch protection off to save time"]},
+search:{
+  cap:"The ad appears first. The official site is further down.",
+  how:["Attackers pay for search ads that sit above the real results, or build sites that rank well for popular searches such as 'download [software]' or '[bank] contact number'. The page looks right, but the download carries malware, or the phone number belongs to a scammer.","Ads are labelled Sponsored, but the label is easy to miss. The safest habit is not to search for places where money, logins or installers are involved. Use a bookmark, a typed address or the official app store."],
+  example:"Someone looking for a PDF editor clicks the first result. It is an ad for a site that copies the vendor's design. The installer works, but it also installs a program that records their passwords.",
+  dos:["Bookmark the logins you use often","Download only from the vendor's own site or an app store","Take support numbers from statements, cards or the official site"],
+  donts:["Trust a result because it is at the top","Download software from a site you reached through an ad","Phone a number found through search for a bank or supplier"]},
+social:{
+  cap:"The pressure is the technique. Verification breaks it.",
+  how:["Social engineers research you first: your job title, your manager's name, a supplier you use. Then they build a believable story and apply pressure so that you act before you think. The more pressure, the more likely a sensible person is to skip checking.","Common targets are finance staff (payment changes), IT helpdesks (password resets) and reception (physical access). In business email compromise, a fake request to change bank details is behind some of the largest financial losses in cybercrime."],
+  example:"Finance receives an email from a long-standing supplier: 'We have changed banks, please use these details from this month.' It is polite and the logo is right. Finance phones the supplier on the number in their own records. The supplier knows nothing about it.",
+  dos:["Verify payment changes by phone using a number you already hold","Slow down whenever you feel pressured","Offer to call back"],
+  donts:["Share codes, passwords or card details","Act on an urgent payment request without a check","Let strangers follow you into secure areas"]},
+insider:{
+  cap:"Three kinds of insider risk, and what helps against each.",
+  how:["Many people picture a rogue employee, but accidents are far more common: files sent to the wrong person, a laptop left on a train, a shared password. A smaller group is deliberate, such as someone leaving with client data. A third group is an ordinary account taken over by a criminal, which looks like an insider but is not one.","Because insiders already have access, technical controls matter: limit access to what each role needs, remove it promptly when people leave, and keep logs so unusual activity can be spotted."],
+  example:"A staff member emails the full customer list to the wrong 'Sam' because auto-complete picked the first match. There was no bad intent, but it is a reportable data incident. A quick report means the recipient can be contacted and the email recalled.",
+  dos:["Double-check recipients before sending sensitive data","Report mistakes quickly, without waiting","Use approved storage and sharing tools"],
+  donts:["Share your login with a colleague","Copy business data to personal devices or accounts","Investigate or confront suspicious behaviour yourself"]},
+types:{
+  cap:"Different names, different jobs, same goal: profit for the attacker.",
+  how:["Malware is an umbrella term, and what matters is what it does. Ransomware locks your files and demands payment. Trojans hide inside something that looks useful. Spyware and keyloggers watch you quietly. Worms spread on their own, and botnets make infected devices obey a remote controller.","Real attacks often chain these together. A phishing email delivers a trojan, which downloads spyware, which steals passwords that are later used to deploy ransomware."],
+  example:"A staff member downloads a cracked version of design software to save the licence fee. It works, but a hidden trojan gives an attacker access. A fortnight later the file server is encrypted and a ransom note appears.",
+  dos:["Keep security software running and up to date","Install software only from approved sources","Report odd behaviour such as pop-ups or sudden slowdowns"],
+  donts:["Use cracked or pirated software","Pay a ransom without expert advice","Keep working on a device you think is infected"]},
+targets:{
+  cap:"Attackers go for what is reachable. The forgotten devices are the easiest.",
+  how:["Most attacks are automated. Programs scan the internet for exposed systems, weak passwords and unpatched software, then attack whatever they find. Size does not matter, but being reachable does.","Smaller organisations are targeted partly because they often lack a dedicated security team, and partly because they supply bigger companies. Printers, routers, cameras and other connected devices are frequently forgotten: they keep default passwords and never get updated."],
+  example:"A small firm's old office router still has its factory admin password. An automated scan finds it, the attacker logs in, and uses it as a doorway to the company's file server.",
+  dos:["Keep an up-to-date list of the devices you own","Change default passwords on every device","Patch routers, printers and servers, not just laptops"],
+  donts:["Assume you are too small to be targeted","Leave unused devices connected","Ignore update prompts on devices that are not computers"]},
+delivery:{
+  cap:"Six common routes onto a device. Most of them need your help.",
+  how:["Malware needs help to run, and the easiest help is you. Phishing links, fake update pop-ups, files from unofficial sites and unknown USB drives all rely on someone clicking, opening or plugging in.","The other route is through software with known flaws. When a vendor fixes a flaw, attackers study the fix and target everyone who has not installed it yet. That is why prompt updates are one of the most effective defences you have."],
+  example:"A staff member finds a USB stick labelled 'Salary review 2026' in the car park. Curiosity wins and they plug it in. It silently installs a remote-access tool. Handing it to IT unopened would have prevented the whole thing.",
+  dos:["Install updates promptly","Hand found USB drives to IT without plugging them in","Use a standard account for daily work, not an administrator account"],
+  donts:["Click pop-ups that say your device needs an update","Download from unofficial sites","Plug in devices you do not recognise"]},
+personal:{
+  cap:"The more personal the password, the easier it is to guess.",
+  how:["People build passwords from what they remember, and what they remember is personal. Attack tools know this. They try names, years, sports teams and common substitutions such as a for @ first. Attackers can also read your social media to find your pet's name, your birthday and your school.","The strongest options are long random passwords made by a manager, or passphrases of four or more unrelated words. Length does more for strength than extra symbols do."],
+  example:"A manager posts photos of her dog Bella online. Her password is Bella1987!, based on her birth year. Someone who finds her profile tries the obvious combinations and gets in within a handful of guesses.",
+  dos:["Use a passphrase of four or more unrelated words","Let a password manager generate random passwords","Give security questions random answers"],
+  donts:["Use names, birthdays, pets or phone numbers","Add a number or symbol to a word and call it safe","Reuse your favourite pattern across sites"]},
+hygiene:{
+  cap:"With reuse, one breach opens everything. Unique passwords contain the damage.",
+  how:["Data breaches happen constantly. When a site you use is breached, your email and password can end up on lists that criminals trade. They then try that pair on other popular sites. If you reused the password, they get in without having to guess anything.","Good hygiene limits the damage. Unique passwords mean one breach affects one account. Changing passwords when there is a reason, rather than on a fixed calendar, also avoids the habit of making small, predictable changes."],
+  example:"A staff member uses the same password for a hobby forum and for their work email. The forum is breached. Within days, someone tries those details against Microsoft 365 and gets in.",
+  dos:["Use a different password for every account","Aim for 14 or more characters","Change a password at once after a suspected breach"],
+  donts:["Share passwords by email or chat","Write passwords on sticky notes","Reuse work passwords on personal sites"]},
+manager:{
+  cap:"The manager only fills in a login when the site address matches.",
+  how:["A password manager keeps an encrypted vault of your logins. It creates strong random passwords and fills them in for you, so you do not have to remember or type them. Because it matches the exact website address, it will not fill your bank password into a look-alike site, which gives you an early warning.","The vault is only as safe as the master password and the second factor protecting it. Choose a long, unique passphrase you have never used elsewhere, and turn on multi-factor authentication for the manager itself."],
+  example:"A user clicks a link to what looks like their bank. Their password manager stays quiet and offers no login. They stop, open the bank from a bookmark instead, and the manager fills the login straight away.",
+  dos:["Use a long, unique master passphrase","Turn on multi-factor authentication for the vault","Use shared vaults for team passwords"],
+  donts:["Keep passwords in spreadsheets or notes","Send passwords by email or chat","Type a password by hand on a page your manager refuses to fill"]},
+mfa:{
+  cap:"Stronger methods resist phishing. A password on its own is the weakest.",
+  how:["Multi-factor authentication means signing in needs something you know (a password) and something you have (a phone or key). If a criminal steals the password, they still cannot get in without the second item.","Not all methods are equal. Passkeys and hardware keys check the website's address and cannot be fooled by a fake page. Authenticator apps are strong. SMS codes are better than nothing but can be intercepted or phished. Attackers also try MFA fatigue: they send repeated prompts hoping you will approve one just to make it stop."],
+  example:"At 2am, a user gets six approval prompts they did not start. They deny every one and change their password in the morning. IT confirms the password had leaked in a breach. MFA stopped the break-in.",
+  dos:["Turn on MFA for email, banking and work accounts","Prefer passkeys or authenticator apps over SMS","Keep backup codes somewhere safe and offline"],
+  donts:["Approve a prompt you did not start","Read a code out to anyone","Turn MFA off because the prompts are annoying"]},
+"malware-attach":{
+  cap:"The file looks routine. Opening it is what runs the attack.",
+  how:["A malware attachment hides a program inside something ordinary: an invoice, a statement, a voicemail notice, a CV or a shared document. The message gives you a reason to open it now, and the moment you do, code runs. Office files lean on macros, small programs that only run once you click Enable Content, which is why that prompt is the whole trick.","Attackers dodge scanning in clever ways. Password-protected ZIPs put the password in the email so security tools cannot look inside. Double extensions such as invoice.pdf.exe disguise a program as a document, especially where the system hides file endings."],
+  example:"An accounts clerk receives 'Remittance advice attached' from what looks like a supplier. The ZIP is password-protected, with the password in the email. Inside is a file that, once opened, quietly installs a remote-access tool. A one-minute call to the supplier shows they sent nothing.",
+  dos:["Confirm unexpected files with the sender through another channel","Turn on 'show file extensions' so disguised programs are visible","Report the message instead of opening the file"],
+  donts:["Enable content, macros or editing because a document asks","Open password-protected archives you did not expect","Assume a known sender means the file is safe"]},
+"cred-harvest":{
+  cap:"A perfect copy of a login you trust. Everything you type is captured.",
+  how:["A credential harvest is about one thing: getting you to type your password into a page the attacker controls. The page is an exact copy of a sign-in you use every day, reached through a link about a shared file, a locked account or a held parcel. Whatever you enter is sent straight to the attacker, who may even forward you to the real site so nothing feels wrong.","The defence is to never sign in from a link. The registered domain, the part just before the first single slash, is what identifies the real owner, and a password manager that refuses to autofill on a look-alike address is an early warning worth trusting."],
+  example:"A user gets 'You have a new secure document' with a Review button. It opens a flawless Microsoft 365 login. They type their password; the page shows a brief error, then lands them on the real Office portal. Nothing looked wrong, but their password is now in an attacker's hands.",
+  dos:["Open the service from a bookmark or by typing the address","Read the domain just before the first single slash","Let MFA and your password manager back you up"],
+  donts:["Sign in from a link in a message","Trust a page just because it looks identical","Ignore a password manager that will not autofill"]},
+"driveby":{
+  cap:"The page can attack the moment it loads, with no click from you.",
+  how:["A drive-by URL is a web page built to attack your device as it loads. It targets flaws in out-of-date browsers, plugins and operating systems, so it can run code without you downloading or clicking anything. The page might look blank, show a fake error, or imitate a familiar site while it works in the background.","Because the danger is invisible, the defences are the ones you keep running in advance: prompt updates close the flaws these pages rely on, and web filtering blocks known-bad and newly registered sites before the page ever loads. Shortened or redirecting links make this worse by hiding the real destination until you are already there."],
+  example:"A staff member clicks a shortened link in a message, expecting a news article. The page loads what looks like a loading spinner. Behind it, code probes the browser for an unpatched flaw. On a fully updated laptop nothing happens; on one months behind on updates, it would have been enough.",
+  dos:["Keep your browser and operating system fully updated","Leave web filtering on, on and off the office network","Expand shortened links or avoid clicking them"],
+  donts:["Delay updates or turn off automatic updating","Bypass a filter block to reach a page","Click shortened links from unexpected senders"]},
+"link-in-attach":{
+  cap:"The email body is clean. The phishing link is one file deep.",
+  how:["A link in attachment moves the bad link out of the email body and into a file, a PDF, a Word document or an image. Many filters focus on links in the message itself, so hiding the link inside an attachment helps the whole thing arrive looking harmless. The file then shows a button or image, 'View document', 'Open in OneDrive', 'Review invoice', that leads to a fake login or a malware download.","The lesson is that opening the attachment is not the finish line. The link inside deserves exactly the same suspicion as a link in an email: check where it really goes, and reach any sign-in through a bookmark instead of the button in the file."],
+  example:"An unexpected PDF titled 'Invoice_overdue' opens to a single 'View secure invoice' button. It leads to a convincing Microsoft 365 login. The email had no links at all, so it passed straight through, and the trap only springs one click inside the file.",
+  dos:["Treat links inside files as warily as links in emails","Open any sign-in from a bookmark, not the file's button","Report unexpected documents that push you to log in"],
+  donts:["Assume a clean-looking email with one attachment is safe","Click 'View document' buttons inside unexpected files","Sign in because an attachment tells you to"]},
+"link-to-malware":{
+  cap:"Hosted on a trusted service to look safe. No attachment to scan.",
+  how:["A link to malware puts the dangerous file on a well-known hosting service, SharePoint, OneDrive, Dropbox or Google Drive, and sends you a link instead of an attachment. This does two things: it borrows the hosting brand's good reputation, and it means there is no file in the email for attachment scanning to catch. The link leads to a familiar-looking file-share page and then to a download that is the actual malware.","A trusted hosting brand is not a safety check. The only question that matters is the same one you ask of any file: did I expect this, from this person, and does it make sense? When in doubt, confirm with the sender on a channel you already trust before you download anything."],
+  example:"A message with a genuine-looking SharePoint link says 'Shared with you: 2026 pricing'. The page looks exactly like SharePoint and offers a download. The file is malware. Because nothing was attached to the email, attachment scanning never had anything to inspect.",
+  dos:["Confirm unexpected shared files with the sender separately","Judge the file by whether you expected it, not the host","Report links to files you did not ask for"],
+  donts:["Trust a file because it sits on a known cloud service","Download unexpected shared files on the spot","Assume a reputable host has scanned the file for you"]},
+"oauth-consent":{
+  cap:"No password is stolen. You grant lasting access by clicking Accept.",
+  how:["An OAuth consent grant does not try to capture your password at all. Instead, a third-party app asks for permission to access your account, and a real sign-in and consent screen, often from a genuine provider, appears. If you click Accept, the app receives an access token. That token is tied to the app, not your password, so it keeps working even after you change the password. Access has to be revoked from the account's connected or enterprise applications.","The warning signs are in the detail: an app you do not recognise, asking for broad permissions such as read your mail, send mail as you, or access your files, often phrased as 'on your behalf' and 'while you are not using the app'. Reading the permissions before clicking is the whole defence."],
+  example:"A user receives an invite to a 'document collaboration' tool. The Microsoft consent screen is completely genuine and asks to read and send mail on their behalf. They click Accept. Days later, phishing is being sent from their mailbox, and resetting the password changes nothing until IT revokes the app's access.",
+  dos:["Read exactly what an app is asking to do before accepting","Grant access only to apps you deliberately set up","Report unexpected consent prompts to IT so the token can be revoked"],
+  donts:["Accept a consent prompt for an app you did not request","Assume a password change removes a granted app's access","Approve broad 'read and send mail' permissions casually"]}
+};
+
+/* ============ DIAGRAMS: inline SVG, themed through CSS variables ============ */
+const X = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const rect = (x,y,w,h,c,rx=10) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" class="${c}"/>`;
+const txt = (x,y,s,c="tx",sz=16,a="start",b=false) => `<text x="${x}" y="${y}" class="${c}${b?" b":""}" font-size="${sz}" text-anchor="${a}">${X(s)}</text>`;
+const line = (x1,y1,x2,y2,c="gl") => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${c}"/>`;
+function arrow(x1,y1,x2,y2,c="gl",f="gfm"){
+  const a=Math.atan2(y2-y1,x2-x1), L=11, W=5.5;
+  const bx=x2-Math.cos(a)*L, by=y2-Math.sin(a)*L, px=-Math.sin(a)*W, py=Math.cos(a)*W;
+  return line(x1,y1,bx,by,c)+`<polygon points="${x2},${y2} ${bx+px},${by+py} ${bx-px},${by-py}" class="${f}"/>`;
+}
+const arB = (x1,y1,x2,y2) => arrow(x1,y1,x2,y2,"glb","gfb");
+const arO = (x1,y1,x2,y2) => arrow(x1,y1,x2,y2,"glo","gfo");
+const cross = (cx,cy) => `<path d="M${cx-7} ${cy-7} l14 14 M${cx+7} ${cy-7} l-14 14" class="glb"/>`;
+const check = (cx,cy) => `<path d="M${cx-8} ${cy} l6 7 l11 -14" class="glo"/>`;
+const mark = (x,y,n) => `<circle cx="${x}" cy="${y}" r="12" class="gsig"/>` + txt(x,y+5,n,"ts",14,"middle",true);
+const svg = (inner,label) => `<svg viewBox="0 0 560 250" role="img" aria-label="${X(label)}">${inner}</svg>`;
+
+const FIGS = {
+phishing: () => {
+  const leg = (y,n,a,b) => mark(392,y,n)+txt(414,y-2,a,"tx",15,"start",true)+txt(414,y+16,b,"tm",14);
+  return svg(
+    rect(15,12,350,226,"gcard")+
+    txt(30,38,'From: "Your Bank" <help@bank-secure.xyz>',"tx",13)+
+    txt(30,62,"Subject: URGENT - account suspended","tx",13,"start",true)+
+    line(15,78,365,78,"gl")+
+    txt(30,106,"Dear customer,","tx",14)+
+    txt(30,130,"Your account will be closed in 24 hours.","tx",14)+
+    rect(30,146,130,34,"gsig",8)+txt(95,168,"Verify now","ts",15,"middle",true)+
+    txt(30,212,"https://bank-secure.xyz/login","tm",12)+
+    mark(346,34,1)+mark(346,58,2)+mark(346,102,3)+mark(346,163,4)+
+    leg(40,1,"Sender domain","does not match")+leg(95,2,"Urgent threat","to rush you")+
+    leg(150,3,"Generic greeting","no real name")+leg(205,4,"Link goes to","another address"),
+    "A fake bank email with four warning signs marked: mismatched sender domain, urgent threat, generic greeting and a link to another address");
+},
+attachments: () => {
+  const row = (y,name,cc,chip,tc) =>
+    rect(20,y,520,62,"gcard")+rect(36,y+13,26,36,"gsoft",4)+
+    `<text x="78" y="${y+39}" font-size="20" class="b">${name}</text>`+
+    rect(318,y+14,208,34,cc,17)+txt(422,y+36,chip,tc,13,"middle",true);
+  return svg(
+    row(15,'<tspan class="tx">Q3-report.xlsx</tspan>',"gok","Expected, known sender","tg")+
+    row(94,'<tspan class="tx">invoice.pdf</tspan><tspan class="tb">.exe</tspan>',"gbad","Real type is a program","tb")+
+    row(173,'<tspan class="tx">Statement.docm</tspan>',"gwarn","Asks you to enable macros","tn"),
+    "Three email attachments: an expected spreadsheet, a file that is really an executable program, and a document asking to enable macros");
+},
+spam: () => {
+  let d=""; for(let i=0;i<12;i++) d+=rect(30+(i%4)*29,88+Math.floor(i/4)*30,23,17,"gsoft",3);
+  return svg(
+    txt(80,52,"All incoming mail","tx",15,"middle",true)+rect(15,64,130,126,"gcard")+d+
+    arrow(145,127,215,127)+
+    rect(215,70,120,110,"gteal")+txt(275,120,"Spam filter","tw",17,"middle",true)+
+    txt(275,142,"learns from","tw",13,"middle")+txt(275,158,"your reports","tw",13,"middle")+
+    arO(335,110,405,62)+arB(335,142,405,150)+
+    rect(405,25,140,70,"gok")+txt(475,56,"Inbox","tg",17,"middle",true)+txt(475,76,"Wanted mail","tx",13,"middle")+
+    rect(405,115,140,70,"gbad")+txt(475,146,"Junk","tb",17,"middle",true)+txt(475,166,"Most spam goes here","tx",13,"middle")+
+    txt(280,232,"Spam that slips through: report it and the filter improves","tm",14,"middle"),
+    "Incoming mail passes through a spam filter that sends wanted mail to the inbox and spam to junk, and learns from user reports");
+},
+wifi: () => svg(
+    rect(15,95,100,60,"gsoft")+txt(65,122,"Your","tx",15,"middle",true)+txt(65,141,"device","tx",15,"middle",true)+
+    arrow(115,115,215,52)+arrow(115,137,215,188)+
+    rect(215,20,150,64,"gok")+txt(290,48,"Airport_Free_WiFi","tg",14,"middle",true)+txt(290,68,"Real network","tx",13,"middle")+
+    rect(215,158,150,64,"gbad")+txt(290,186,"Airport Free WiFi","tb",14,"middle",true)+txt(290,206,"Fake twin","tx",13,"middle")+
+    arO(365,52,435,52)+arB(365,190,435,190)+
+    rect(435,20,110,64,"gsoft")+txt(490,58,"Internet","tx",16,"middle",true)+
+    rect(435,158,110,64,"gbad")+txt(490,186,"Attacker","tb",16,"middle",true)+txt(490,206,"sees traffic","tx",13,"middle")+
+    txt(280,244,"The names differ by one character. Your device cannot tell which is real.","tm",14,"middle"),
+    "A device can join the real airport Wi-Fi or a fake twin network, where an attacker sees the traffic"),
+https: () => {
+  const chip = (x,w,t,c,tc) => rect(x,50,w,34,c,8)+txt(x+w/2,73,t,tc+" mono",15,"middle");
+  const lab = (cx,a,b,c) => txt(cx,130,a,c,13,"middle",true)+txt(cx,148,b,c,13,"middle");
+  return svg(
+    txt(280,24,"The padlock vouches for the line, not for the owner","tx",15,"middle",true)+
+    rect(15,38,530,58,"gcard",29)+
+    `<rect x="33" y="62" width="16" height="13" rx="2" class="gfm"/><path d="M36 62 v-5 a5 5 0 0 1 10 0 v5" class="gl"/>`+
+    chip(60,82,"https://","gtsoft","tx")+chip(146,150,"login.bank.com.","gsoft","tm")+
+    chip(300,140,"verify-now.xyz","gbad","tb b")+chip(444,92,"/signin","gsoft","tm")+
+    line(101,86,101,114)+line(221,86,221,114)+line(370,86,370,114,"glb")+line(490,86,490,114)+
+    lab(101,"Padlock:","line is private","tx")+lab(221,"Subdomains:","attacker can set","tm")+
+    lab(370,"The real owner:","who you talk to","tb")+lab(490,"Page on","that site","tm")+
+    rect(60,172,440,60,"gbad")+
+    txt(280,198,"Real owner of this address: verify-now.xyz","tb",17,"middle",true)+
+    txt(280,218,"Not bank.com. That part is only a label the attacker chose.","tx",13,"middle"),
+    "Anatomy of a web address: the padlock covers the connection, while the real owner is the domain before the first single slash");
+},
+filtering: () => {
+  const out = (y,cls,t,s,tc,ico) => rect(330,y,215,50,cls)+ico+txt(372,y+22,t,"tx",15,"start",true)+txt(372,y+40,s,tc,13,"start",true);
+  return svg(
+    txt(215,28,"Web filter","tx",15,"middle",true)+
+    rect(15,95,90,60,"gsoft")+txt(60,131,"You","tx",17,"middle",true)+
+    arrow(105,125,195,125)+rect(195,40,40,170,"gteal")+
+    arB(235,125,330,65)+arB(235,125,330,125)+arO(235,125,330,185)+
+    out(40,"gbad","Known phishing site","Blocked","tb",cross(350,65))+
+    out(100,"gbad","Malware download","Blocked","tb",cross(350,125))+
+    out(160,"gok","Safe business site","Allowed","tg",check(350,185))+
+    txt(280,238,"False block? Ask IT to review it. Do not work around it.","tm",14,"middle"),
+    "A web filter sits between the user and the internet, blocking phishing and malware sites and allowing safe sites");
+},
+search: () => svg(
+    rect(15,12,530,226,"gcard")+
+    rect(35,26,490,34,"gsoft",17)+txt(55,48,"free pdf editor download","tm",15)+
+    rect(35,76,490,70,"gbad")+rect(45,86,78,20,"gsig",5)+txt(84,101,"Sponsored","ts",12,"middle",true)+
+    txt(132,101,"Free PDF Editor - Download Now","tx",16,"start",true)+txt(45,130,"free-pdf-download-now.com","tm",13)+
+    txt(512,122,"Looks official,","tb",14,"end",true)+txt(512,140,"but it is an ad","tb",14,"end",true)+
+    rect(35,158,490,70,"gok")+txt(45,184,"Official vendor website","tx",16,"start",true)+txt(45,206,"vendor.com/downloads","tm",13)+
+    txt(512,184,"Use a bookmark","tg",14,"end",true)+txt(512,204,"or type the address","tg",14,"end",true),
+    "A search results page where a sponsored ad imitates a vendor and the official site appears lower down"),
+social: () => {
+  const box = (y,t,s) => rect(15,y,170,58,"gwarn")+txt(30,y+26,t,"tx",16,"start",true)+txt(30,y+46,s,"tm",13);
+  return svg(
+    box(20,"Authority","I am the CEO")+box(96,"Urgency","Do it in the next hour")+box(172,"Secrecy","Tell nobody")+
+    arrow(185,49,225,92)+arrow(185,125,225,115)+arrow(185,201,225,138)+
+    rect(225,70,140,90,"gbad")+txt(295,108,"Pressure builds","tb",15,"middle",true)+txt(295,128,"thinking stops","tx",13,"middle")+
+    arB(365,115,415,115)+
+    rect(415,70,130,90,"gbad")+txt(480,100,"Money, codes","tx",14,"middle",true)+txt(480,120,"or access","tx",14,"middle",true)+txt(480,140,"handed over","tx",14,"middle",true)+
+    arO(390,188,390,126)+
+    rect(225,188,320,50,"gok")+txt(385,210,"Break the chain: stop and","tg",14,"middle",true)+txt(385,228,"call back on a known number","tx",13,"middle"),
+    "Authority, urgency and secrecy build pressure that leads to money or access being handed over, unless the person stops and verifies by calling back");
+},
+insider: () => {
+  const card = (x,t,l1,l2,l3,h1,h2) =>
+    rect(x,20,165,210,"gcard")+rect(x,20,165,40,"gteal")+txt(x+82,46,t,"tw",17,"middle",true)+
+    txt(x+16,88,l1,"tx",14)+txt(x+16,108,l2,"tx",14)+txt(x+16,128,l3,"tx",14)+
+    line(x+16,150,x+149,150)+txt(x+16,174,"What helps","tm",13,"start",true)+
+    txt(x+16,196,h1,"tx",14)+txt(x+16,214,h2,"tx",14);
+  return svg(
+    card(15,"Careless","Wrong recipient,","lost laptop,","shared password","Training and","simple processes")+
+    card(198,"Deliberate","Staff or contractor","takes or damages","business data","Least privilege","and activity logs")+
+    card(381,"Hijacked","A criminal uses a","real person's login","from outside","Multi-factor sign-in","and fast reporting"),
+    "Three kinds of insider risk: careless, deliberate and hijacked accounts, each with the controls that help");
+},
+types: () => {
+  const card = (x,y,c,t,a,b) => rect(x,y,260,105,c)+txt(x+16,y+32,t,"tx",16,"start",true)+txt(x+16,y+60,a,"tx",14)+txt(x+16,y+80,b,"tm",14);
+  return svg(
+    card(15,15,"gbad","Ransomware","Locks your files and","demands payment")+
+    card(285,15,"gwarn","Trojans","Hide inside 'free' or","cracked software")+
+    card(15,130,"gsoft","Spyware and keyloggers","Quietly record what you","type and see")+
+    card(285,130,"gsoft","Worms and botnets","Spread by themselves and","take remote control"),
+    "Four families of malware: ransomware, trojans, spyware and keyloggers, and worms and botnets");
+},
+targets: () => {
+  const dev = (x,y,t,c) => rect(x,y,160,66,c)+txt(x+80,y+39,t,"tx",14,"middle",true);
+  return svg(
+    txt(15,28,"Usually protected","tm",14,"start",true)+
+    dev(15,38,"Laptops and phones","gsoft")+dev(200,38,"Servers","gsoft")+dev(385,38,"Cloud accounts","gsoft")+
+    txt(15,134,"Often forgotten: default passwords, rarely updated","tn",14,"start",true)+
+    dev(15,144,"Routers","gwarn")+dev(200,144,"Printers","gwarn")+dev(385,144,"Cameras and IoT","gwarn")+
+    txt(280,238,"Attackers scan for what is reachable, not for who is important","tx",15,"middle",true),
+    "Common devices attackers target, with routers, printers and connected devices highlighted as often forgotten");
+},
+delivery: () => {
+  const L = (y,t) => rect(15,y,170,56,"gsoft")+txt(100,y+34,t,"tx",14,"middle",true);
+  const R = (y,t) => rect(375,y,170,56,"gsoft")+txt(460,y+34,t,"tx",14,"middle",true);
+  return svg(
+    L(15,"Phishing link")+L(97,"Bad attachment")+L(179,"Fake update pop-up")+
+    R(15,"Cracked software")+R(97,"Unknown USB drive")+R(179,"Unpatched software")+
+    arrow(185,43,215,108)+arrow(185,125,215,125)+arrow(185,207,215,142)+
+    arrow(375,43,345,108)+arrow(375,125,345,125)+arrow(375,207,345,142)+
+    rect(215,95,130,60,"gbad")+txt(280,131,"Your device","tb",16,"middle",true),
+    "Six routes malware uses to reach a device: phishing links, bad attachments, fake updates, cracked software, unknown USB drives and unpatched software");
+},
+personal: () => {
+  const row = (y,pw,w,c,v,vc) => txt(15,y+22,pw,"tx mono",16)+rect(265,y+6,280,16,"gsoft",8)+rect(265,y+6,w,16,c,8)+txt(265,y+42,v,vc,13);
+  return svg(
+    row(10,"Bella1987!",50,"gfb","Pet name plus birth year","tb")+
+    row(65,"Summer2026!",42,"gfb","Season plus year, a common pattern","tb")+
+    row(120,"plum-ladder-ocean-teapot",270,"gfo","Long, unrelated words","tg")+
+    row(175,"T7#kq9Lz$vR2mW",245,"gfo","Random, from a password manager","tg")+
+    txt(545,246,"Bar length: how hard it is to guess","tm",12,"end"),
+    "Four example passwords with bars showing how hard each is to guess: names and years are weak, long passphrases and random passwords are strong");
+},
+hygiene: () => {
+  const acct = (x,y,t,bad) => rect(x,y,78,54,bad?"gbad":"gok")+txt(x+39,y+25,t,"tx",14,"middle",true)+txt(x+39,y+43,bad?"opened":"safe",bad?"tb":"tg",12,"middle",true);
+  const names = ["Shop","Email","Bank","Social"];
+  const xs = [175,270,365,460];
+  let a="", b="";
+  names.forEach((n,i)=>{ a+=acct(xs[i],40,n,true); b+=acct(xs[i],150,n,i===0); });
+  return svg(
+    txt(15,28,"One password everywhere","tx",15,"start",true)+
+    rect(15,40,110,54,"gbad")+txt(70,72,"Site breached","tb",13,"middle",true)+
+    arB(125,67,175,67)+a+arB(253,67,270,67)+arB(348,67,365,67)+arB(443,67,460,67)+
+    txt(15,138,"A unique password for each account","tx",15,"start",true)+
+    rect(15,150,110,54,"gbad")+txt(70,182,"Site breached","tb",13,"middle",true)+
+    arB(125,177,175,177)+b+
+    txt(545,238,"Same breach, very different damage","tm",13,"end"),
+    "With one reused password a breach opens every account; with unique passwords only the breached account is affected");
+},
+manager: () => svg(
+    rect(15,80,130,90,"gsoft")+txt(80,112,"You","tx",16,"middle",true)+txt(80,134,"one master","tx",13,"middle")+txt(80,152,"passphrase + MFA","tx",13,"middle")+
+    arrow(145,125,185,125)+
+    rect(185,80,110,90,"gteal")+txt(240,120,"Password","tw",16,"middle",true)+txt(240,140,"vault","tw",16,"middle",true)+
+    arO(295,110,355,65)+arB(295,140,355,175)+
+    rect(355,25,190,80,"gok")+txt(370,52,"bank.com","tg",15,"start",true)+txt(370,74,"Address matches:","tx",13)+txt(370,92,"fills in the login","tx",13)+
+    rect(355,135,190,80,"gbad")+txt(370,162,"bank-login.xyz","tb",15,"start",true)+txt(370,184,"No match: no fill.","tx",13)+txt(370,202,"Pause and check.","tx",13),
+    "A password vault unlocked by one master passphrase fills logins only when the website address matches"),
+mfa: () => {
+  const row = (y,t,s,w,c) => txt(15,y+20,t,"tx",15,"start",true)+txt(15,y+40,s,"tm",12.5)+rect(255,y+8,290,26,"gsoft",13)+rect(255,y+8,w,26,c,13);
+  return svg(
+    row(10,"Passkey or hardware key","Resists fake sites",290,"gfo")+
+    row(65,"Authenticator app","Strong; watch for prompts",225,"gfo")+
+    row(120,"SMS code","Better than nothing",140,"gfw")+
+    row(175,"Password only","One leak and they are in",50,"gfb")+
+    txt(280,246,"Never approve a prompt you did not start","tb",14,"middle",true),
+    "Sign-in methods ranked by strength: passkeys and hardware keys, authenticator apps, SMS codes, then password only");
+},
+"malware-attach": () => svg(
+    rect(15,14,250,196,"gcard")+
+    txt(30,40,"From: supplier (mailbox hijacked)","tm",12)+
+    txt(30,64,"Remittance advice attached","tx",14,"start",true)+
+    line(15,78,265,78,"gl")+
+    rect(30,92,206,54,"gsoft",8)+`<rect x="44" y="104" width="20" height="30" rx="3" class="gfb"/>`+
+    txt(76,116,"Remittance.zip","tx",13,"start",true)+txt(76,136,"password is in the email","tm",12)+
+    rect(30,158,168,38,"gsig",8)+txt(114,182,"Enable content","ts",14,"middle",true)+mark(212,177,1)+
+    arB(265,120,322,120)+
+    rect(322,76,223,96,"gbad")+txt(433,112,"Code runs on open","tb",16,"middle",true)+txt(433,136,"the device is infected","tx",14,"middle")+
+    txt(280,236,"1  The prompt to enable is the attack, not the document","tm",13,"middle"),
+    "A disguised email attachment: enabling content or opening the file runs code that infects the device"),
+"cred-harvest": () => {
+  const lock = `<rect x="40" y="52" width="14" height="11" rx="2" class="gfb"/><path d="M42.5 52 v-4 a4.5 4.5 0 0 1 9 0 v4" class="glb"/>`;
+  return svg(
+    txt(280,20,"An exact copy of a sign-in you trust","tx",15,"middle",true)+
+    rect(15,32,370,196,"gcard")+
+    rect(28,44,344,30,"gbad",15)+lock+txt(62,64,"login.microsoftonline.com.verify.xyz","tb mono",12.5)+
+    txt(44,100,"Email","tm",13)+rect(44,108,300,28,"gsoft",6)+
+    txt(44,150,"Password","tm",13)+rect(44,158,300,28,"gsoft",6)+txt(56,177,"••••••••","tm",14)+
+    rect(44,196,130,26,"gsig",6)+txt(109,214,"Sign in","ts",13,"middle",true)+
+    arB(385,130,440,130)+
+    rect(440,92,105,80,"gbad")+txt(492,124,"Attacker","tb",15,"middle",true)+txt(492,146,"captures both","tx",12.5,"middle")+
+    txt(280,244,"Reached from a link; only the domain before the first single slash is real","tm",13,"middle"),
+    "A fake sign-in page captures the email and password typed into it and sends them to an attacker");
+},
+"driveby": () => svg(
+    rect(15,100,115,54,"gsoft")+txt(72,131,"Click a link","tx",14,"middle",true)+
+    arrow(130,127,172,127)+
+    rect(172,86,150,82,"gbad")+txt(247,114,"Page loads and runs","tb",14,"middle",true)+txt(247,132,"code in your browser","tx",13,"middle")+txt(247,150,"no click needed","tx",13,"middle")+
+    arO(322,112,398,66)+rect(398,36,150,62,"gok")+check(418,67)+txt(486,60,"Updated browser","tx",13,"middle",true)+txt(486,80,"attack blocked","tg",13,"middle")+
+    arB(322,142,398,190)+rect(398,160,150,62,"gbad")+cross(418,191)+txt(486,184,"Outdated browser","tx",13,"middle",true)+txt(486,204,"device infected","tb",13,"middle")+
+    txt(200,242,"Patched software and web filtering stop it before it loads","tm",13,"middle"),
+    "A drive-by page runs code as it loads; an updated browser blocks it, an outdated one is infected"),
+"link-in-attach": () => svg(
+    rect(15,40,165,150,"gcard")+txt(30,66,"Email body","tx",14,"start",true)+txt(30,90,"No links","tg",13,"start",true)+txt(30,112,"Looks clean to","tm",12)+txt(30,128,"link scanners","tm",12)+
+    rect(30,148,135,34,"gsoft",6)+txt(97,169,"Invoice.pdf","tx",13,"middle",true)+
+    arrow(180,115,208,115)+
+    rect(210,40,150,150,"gcard")+txt(285,66,"Invoice.pdf","tx",14,"middle",true)+line(228,82,342,82,"gl")+line(228,100,342,100,"gl")+
+    rect(228,120,114,40,"gsig",8)+txt(285,145,"View document","ts",13,"middle",true)+
+    arrow(360,115,388,115)+
+    rect(390,40,155,150,"gbad")+txt(467,70,"Fake sign-in","tb",15,"middle",true)+rect(405,92,125,24,"gsoft",5)+rect(405,126,125,24,"gsoft",5)+txt(467,176,"captures password","tx",12.5,"middle")+
+    txt(280,236,"The link is hidden inside the file, so the email itself looks safe","tm",13,"middle"),
+    "A clean-looking email carries a PDF whose button leads to a fake sign-in page"),
+"link-to-malware": () => svg(
+    rect(15,46,165,140,"gcard")+txt(30,72,"Email with a link","tx",13,"start",true)+txt(30,96,"No attachment","tg",13,"start",true)+
+    rect(30,116,135,44,"gsoft",6)+txt(97,134,"Shared with you","tm",12,"middle")+txt(97,151,"pricing.xlsx","tx",13,"middle",true)+
+    arrow(180,116,208,116)+
+    rect(210,46,150,140,"gtsoft")+txt(285,76,"Looks like","tx",13,"middle",true)+txt(285,94,"SharePoint","tx",14,"middle",true)+txt(285,120,"Trusted brand,","tm",12,"middle")+txt(285,136,"borrowed trust","tm",12,"middle")+
+    rect(228,150,114,26,"gteal",6)+txt(285,168,"Download","tw",12.5,"middle",true)+
+    arrow(360,116,388,116)+
+    rect(390,46,155,140,"gbad")+txt(467,106,"The download","tb",15,"middle",true)+txt(467,128,"is malware","tb",15,"middle",true)+
+    txt(280,236,"No file is attached to the email, so attachment scanning sees nothing","tm",13,"middle"),
+    "A link points to a file on a trusted cloud service, but the download is malware"),
+"oauth-consent": () => svg(
+    rect(15,24,290,196,"gcard")+rect(15,24,290,40,"gteal")+txt(160,50,"Permissions requested","tw",15,"middle",true)+
+    txt(32,88,"App: 'Doc Collaborator' (unknown)","tm",12.5)+
+    txt(32,118,"•  Read your mail","tx",13.5)+txt(32,142,"•  Send mail as you","tx",13.5)+txt(32,166,"•  Access your files","tx",13.5)+
+    rect(32,180,118,30,"gsoft",8)+txt(91,200,"Decline","tx",14,"middle",true)+
+    rect(170,180,120,30,"gsig",8)+txt(230,200,"Accept","ts",14,"middle",true)+
+    arB(305,120,360,120)+
+    rect(360,70,185,100,"gbad")+txt(452,104,"Access token","tb",16,"middle",true)+txt(452,128,"granted to the app","tx",13,"middle")+txt(452,150,"survives a password reset","tx",12.5,"middle")+
+    txt(280,238,"No password is stolen; clicking Accept hands over lasting access","tm",13,"middle"),
+    "A consent screen grants a third-party app an access token that survives a password change")
+};
+
+/* ============ STATE ============ */
+const KEY = "cyberawareness.v1";
+let S = { name:"", org:"", t:{} };
+let storageOk = true;
+function load(){
+  try{ const r = localStorage.getItem(KEY); if(r){ const o = JSON.parse(r); S = { name:o.name||"", org:o.org||"", t:o.t||{} }; } }
+  catch(e){ storageOk = false; }
+  if(CUSTOMER && !S.org) S.org = CUSTOMER;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ storageOk = false; } }
+load();
+
+const ALL = MODULES.flatMap(m => m.topics.map(t => Object.assign({}, t, EXTRA[t.id]||{}, { mod:m })));
+const total = ALL.length;
+const rec = id => S.t[id] || { viewed:false, attempts:0, best:0, passed:false };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const doneCount = () => ALL.filter(t => rec(t.id).passed).length;
+const pct = (n,d) => d ? Math.round(n/d*100) : 0;
+function statusOf(id){
+  const r = rec(id);
+  if(r.passed) return "done";
+  if(r.attempts>0) return "tried";
+  if(r.viewed) return "read";
+  return "new";
+}
+function statusText(id){
+  const r = rec(id);
+  if(r.passed) return "Passed " + r.best + "/3";
+  if(r.attempts>0) return "Best " + r.best + "/3, retry";
+  if(r.viewed) return "Lesson read";
+  return "Not started";
+}
+
+/* ============ VIEWS ============ */
+const app = document.getElementById("app");
+let view = { name:"home" };
+let Q = null;
+
+function go(v){ view = v; render(); window.scrollTo(0,0); }
+
+function tileHTML(t){
+  const st = statusOf(t.id);
+  const mark = st==="done" ? "&#10003;" : st==="tried" ? "!" : "";
+  return `<button class="tile ${st==="new"?"":st}" data-act="open" data-id="${t.id}">
+    <span class="t">${esc(t.title)}<span class="s">${esc(statusText(t.id))}</span></span>
+    <span class="dot" aria-hidden="true">${mark}</span></button>`;
+}
+
+function renderHome(){
+  const d = doneCount();
+  const cols = MODULES.map(m => {
+    const done = m.topics.filter(t => rec(t.id).passed).length;
+    return `<section class="col" aria-label="${esc(m.name)}">
+      <h2>${esc(m.name)}</h2>
+      <div class="mini"><div class="bar"><i style="width:${pct(done,m.topics.length)}%"></i></div>${done}/${m.topics.length}</div>
+      ${m.topics.map(tileHTML).join("")}
+    </section>`;
+  }).join("");
+  app.innerHTML = `
+  <header class="top">
+    <div>
+      <h1>${esc(BRAND)}</h1>
+      ${CUSTOMER ? `<p class="note" style="margin:6px 0 0;font-weight:600;color:var(--teal)">Prepared for ${esc(CUSTOMER)}</p>` : ""}
+      <p>Short lessons on the threats that matter most. Read a topic, answer three questions, and track your progress as you go.</p>
+    </div>
+    <div class="who">
+      <label>Your name<input id="nm" value="${esc(S.name)}" autocomplete="name" maxlength="60"></label>
+      <label>Organisation<input id="og" value="${esc(S.org)}" autocomplete="organization" maxlength="60"></label>
+    </div>
+  </header>
+  <div class="overall" role="group" aria-label="Overall progress">
+    <div class="big">${pct(d,total)}%</div>
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct(d,total)}"><i style="width:${pct(d,total)}%"></i></div>
+    <div><b>${d} of ${total} topics passed</b><small>Pass a topic by answering at least ${PASS_MARK} of 3 correctly.</small></div>
+  </div>
+  <main class="board">${cols}</main>
+  <div class="foot">
+    <button class="btn teal" data-act="results">View my results</button>
+    <button class="btn danger" data-act="reset" id="rst">Reset progress</button>
+    <span class="note">${storageOk ? "Progress is saved in this browser on this device only." : "Saving is unavailable here, so progress will be lost when you close this page."}</span>
+  </div>`;
+  const nm = document.getElementById("nm"), og = document.getElementById("og");
+  nm.addEventListener("input", () => { S.name = nm.value; save(); });
+  og.addEventListener("input", () => { S.org = og.value; save(); });
+}
+
+function renderTopic(){
+  const t = ALL.find(x => x.id===view.id);
+  const r = rec(t.id);
+  const i = ALL.indexOf(t);
+  const next = ALL[i+1];
+  const fig = FIGS[t.id] ? `<figure class="fig">${FIGS[t.id]()}<figcaption>${esc(t.cap||"")}</figcaption></figure>` : "";
+  app.innerHTML = `<div class="panel lesson">
+    <button class="crumb" data-act="home">&larr; All topics</button>
+    <p class="note" style="margin:0 0 4px">${esc(t.mod.name)}</p>
+    <h1>${esc(t.title)}</h1>
+    <p class="intro">${esc(t.intro)}</p>
+    ${fig}
+    <h2>How it works</h2>
+    ${(t.how||[]).map(p => `<p class="body">${esc(p)}</p>`).join("")}
+    ${t.example ? `<div class="example"><b>What it looks like</b>${esc(t.example)}</div>` : ""}
+    <h2>Key points</h2>
+    <ul>${t.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
+    ${t.dos ? `<div class="dd"><div class="do"><b>Do</b><ul>${t.dos.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div>
+      <div class="dont"><b>Don't</b><ul>${t.donts.map(p => `<li>${esc(p)}</li>`).join("")}</ul></div></div>` : ""}
+    <div class="tip"><b>Remember</b>${esc(t.tip)}</div>
+    <div class="foot" style="margin-top:0">
+      <button class="btn primary" data-act="start" data-id="${t.id}">${r.attempts ? "Retake the questions" : "Start the questions"}</button>
+      ${next ? `<button class="btn" data-act="open" data-id="${next.id}">Next: ${esc(next.title)}</button>` : ""}
+    </div>
+  </div>`;
+}
+
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function startQuiz(id){
+  const t = ALL.find(x => x.id===id);
+  Q = { id, idx:0, score:0, answered:false, picked:-1,
+        order: t.qs.map(q => shuffle([0,1,2,3])) };
+  go({ name:"quiz" });
+}
+
+function renderQuiz(){
+  const t = ALL.find(x => x.id===Q.id);
+  const q = t.qs[Q.idx];
+  const ord = Q.order[Q.idx];
+  const opts = ord.map((orig,pos) => {
+    let cls = "opt", dis = "";
+    if(Q.answered){
+      dis = "disabled";
+      if(orig===0) cls += " right";
+      else if(pos===Q.picked) cls += " wrong";
+    }
+    return `<button class="${cls}" ${dis} data-act="ans" data-pos="${pos}">${esc(q[1+orig])}</button>`;
+  }).join("");
+  let fb = "";
+  if(Q.answered){
+    const ok = ord[Q.picked]===0;
+    fb = `<div class="fb ${ok?"good":"miss"}" role="status"><b>${ok?"Correct.":"Not quite."}</b> ${esc(q[5])}</div>
+      <button class="btn primary" data-act="next">${Q.idx===t.qs.length-1 ? "See my result" : "Next question"}</button>`;
+  }
+  app.innerHTML = `<div class="panel">
+    <div class="qhead"><span>${esc(t.title)}: question ${Q.idx+1} of ${t.qs.length}</span>
+      <div class="bar"><i style="width:${pct(Q.idx+(Q.answered?1:0),t.qs.length)}%"></i></div></div>
+    <p class="q">${esc(q[0])}</p>
+    <div class="opts">${opts}</div>
+    ${fb}
+  </div>`;
+}
+
+function finishQuiz(){
+  const t = ALL.find(x => x.id===Q.id);
+  const r = rec(t.id);
+  r.viewed = true; r.attempts += 1;
+  r.best = Math.max(r.best, Q.score);
+  if(Q.score >= PASS_MARK) r.passed = true;
+  S.t[t.id] = r; save();
+  go({ name:"result" });
+}
+
+function renderResult(){
+  const t = ALL.find(x => x.id===Q.id);
+  const passed = Q.score >= PASS_MARK;
+  const i = ALL.indexOf(t);
+  const next = ALL[i+1];
+  const left = total - doneCount();
+  app.innerHTML = `<div class="panel">
+    <p class="note" style="margin:0">${esc(t.title)}</p>
+    <div class="score">${Q.score} / ${t.qs.length}</div>
+    <h1>${passed ? "Topic passed" : "Not passed yet"}</h1>
+    <p class="intro">${passed
+      ? (left===0 ? "You have passed every topic. Open your results to copy your summary." : `${left} topic${left===1?"":"s"} still to go.`)
+      : `You need ${PASS_MARK} correct to pass. Re-read the lesson, then try again. The answers are explained as you go.`}</p>
+    <div class="foot" style="margin-top:0">
+      ${passed ? "" : `<button class="btn primary" data-act="open" data-id="${t.id}">Review the lesson</button><button class="btn" data-act="start" data-id="${t.id}">Retry now</button>`}
+      ${passed && next ? `<button class="btn primary" data-act="open" data-id="${next.id}">Next: ${esc(next.title)}</button>` : ""}
+      ${passed && left===0 ? `<button class="btn primary" data-act="results">View my results</button>` : ""}
+      <button class="btn" data-act="home">All topics</button>
+    </div>
+  </div>`;
+}
+
+function summaryText(){
+  const d = doneCount();
+  const lines = [];
+  lines.push(BRAND + " - results");
+  lines.push("Name: " + (S.name || "(not entered)"));
+  lines.push("Organisation: " + (S.org || "(not entered)"));
+  lines.push("Date: " + new Date().toISOString().slice(0,10));
+  lines.push("Topics passed: " + d + " of " + total + " (" + pct(d,total) + "%)");
+  lines.push("");
+  MODULES.forEach(m => {
+    lines.push(m.name);
+    m.topics.forEach(t => {
+      const r = rec(t.id);
+      lines.push("  " + t.title + ": " + (r.passed ? "Passed" : r.attempts ? "Not passed" : "Not started") +
+        " (best " + r.best + "/3, attempts " + r.attempts + ")");
+    });
+  });
+  return lines.join("\n");
+}
+
+function renderResults(){
+  const d = doneCount();
+  const rows = MODULES.map(m => {
+    const done = m.topics.filter(t => rec(t.id).passed).length;
+    return `<tr><th colspan="3" style="color:var(--text)">${esc(m.name)} (${done}/${m.topics.length})</th></tr>` +
+      m.topics.map(t => {
+        const r = rec(t.id);
+        const pill = r.passed ? `<span class="pill ok">Passed</span>` : r.attempts ? `<span class="pill mid">Not passed</span>` : `<span class="pill no">Not started</span>`;
+        return `<tr><td>${esc(t.title)}</td><td>${pill}</td><td>${r.attempts ? r.best+"/3" : "-"}</td></tr>`;
+      }).join("");
+  }).join("");
+  app.innerHTML = `<div class="panel" style="max-width:860px">
+    <button class="crumb" data-act="home">&larr; All topics</button>
+    <h1>${d===total ? "All topics complete" : "My results"}</h1>
+    <p class="intro">${esc(S.name || "Unnamed learner")}${S.org ? ", " + esc(S.org) : ""}: ${d} of ${total} topics passed (${pct(d,total)}%).</p>
+    <div class="bar" style="margin-bottom:8px"><i style="width:${pct(d,total)}%"></i></div>
+    <div class="tblwrap"><table class="tbl"><thead><tr><th>Topic</th><th>Status</th><th>Best score</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="note">Copy this summary and send it to whoever asked for your results.</p>
+    <textarea class="sum" id="sum" readonly>${esc(summaryText())}</textarea>
+    <div class="foot"><button class="btn teal" data-act="copy" id="cpy">Copy summary</button></div>
+  </div>`;
+}
+
+function render(){
+  if(view.name==="home") renderHome();
+  else if(view.name==="topic") renderTopic();
+  else if(view.name==="quiz") renderQuiz();
+  else if(view.name==="result") renderResult();
+  else if(view.name==="results") renderResults();
+}
+
+/* ============ EVENTS ============ */
+let resetArmed = false;
+app.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if(!b) return;
+  const act = b.dataset.act;
+  if(act==="open"){
+    const r = rec(b.dataset.id); r.viewed = true; S.t[b.dataset.id] = r; save();
+    go({ name:"topic", id:b.dataset.id });
+  }
+  else if(act==="home"){ resetArmed=false; go({ name:"home" }); }
+  else if(act==="start"){ startQuiz(b.dataset.id); }
+  else if(act==="ans"){
+    if(Q.answered) return;
+    Q.picked = +b.dataset.pos; Q.answered = true;
+    if(Q.order[Q.idx][Q.picked]===0) Q.score++;
+    render();
+    const nx = app.querySelector('[data-act="next"]'); if(nx) nx.focus();
+  }
+  else if(act==="next"){
+    const t = ALL.find(x => x.id===Q.id);
+    if(Q.idx < t.qs.length-1){ Q.idx++; Q.answered=false; Q.picked=-1; render(); window.scrollTo(0,0); }
+    else finishQuiz();
+  }
+  else if(act==="results"){ go({ name:"results" }); }
+  else if(act==="copy"){
+    const ta = document.getElementById("sum"), btn = document.getElementById("cpy");
+    const fallback = () => { ta.focus(); ta.select(); btn.textContent = "Selected. Press Ctrl+C or Copy"; };
+    try{
+      navigator.clipboard.writeText(ta.value).then(() => { btn.textContent = "Copied"; }, fallback);
+    }catch(err){ fallback(); }
+  }
+  else if(act==="reset"){
+    if(!resetArmed){ resetArmed = true; b.textContent = "Click again to erase all progress"; return; }
+    S = { name:S.name, org:S.org, t:{} }; save(); resetArmed=false; render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
