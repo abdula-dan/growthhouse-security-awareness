@@ -778,7 +778,7 @@ const KEY = "cyberawareness.v1";
 let S = { name:"", org:"", t:{} };
 let storageOk = true;
 function load(){
-  try{ const r = localStorage.getItem(KEY); if(r){ const o = JSON.parse(r); S = { name:o.name||"", org:o.org||"", t:o.t||{}, firstOpened:o.firstOpened||"", uid:o.uid||"", trackedStarted:o.trackedStarted||false }; } }
+  try{ const r = localStorage.getItem(KEY); if(r){ const o = JSON.parse(r); S = { name:o.name||"", org:o.org||"", t:o.t||{}, firstOpened:o.firstOpened||"", uid:o.uid||"", trackedStarted:o.trackedStarted||false, submitted:o.submitted||false }; } }
   catch(e){ storageOk = false; }
   if(CUSTOMER && !S.org) S.org = CUSTOMER;
 }
@@ -822,6 +822,26 @@ function submitMailto(){
   const subj=(CUSTOMER?CUSTOMER+" — ":"")+BRAND+" results: "+(S.name||"(no name)");
   const body=summaryText()+"\n\n----- CSV (please keep, used for the report) -----\n"+csvText();
   return "mailto:"+encodeURIComponent(REPORT_EMAIL)+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
+}
+// Submit directly: POST the full results to the collector (no email client). Falls back to email if no collector is configured.
+function submitResults(btn){
+  const csv = csvText();
+  if(TRACK_URL){
+    try{
+      const url = TRACK_URL + (TRACK_URL.indexOf("?")>=0?"&":"?")
+        + "event=completed&name=" + encodeURIComponent(S.name||"")
+        + "&customer=" + encodeURIComponent(CUSTOMER)
+        + "&ts=" + encodeURIComponent(new Date().toISOString());
+      let ok=false;
+      try{ ok = navigator.sendBeacon(url, new Blob([csv], {type:"text/plain;charset=UTF-8"})); }catch(e){}
+      if(!ok){ try{ fetch(url,{method:"POST",mode:"no-cors",keepalive:true,headers:{"Content-Type":"text/plain;charset=UTF-8"},body:csv}); }catch(e){} }
+      S.submitted=true; save();
+      if(btn){ btn.textContent="Submitted \u2713"; btn.disabled=true; }
+      const note=document.getElementById("subnote"); if(note){ note.textContent="Thank you \u2014 your results have been submitted."; }
+      return;
+    }catch(e){}
+  }
+  if(REPORT_EMAIL){ window.location.href = submitMailto(); }
 }
 function downloadCSV(){
   try{
@@ -1044,9 +1064,9 @@ function renderResults(){
     <div class="foot">
       <button class="btn teal" data-act="copy" id="cpy">Copy summary</button>
       <button class="btn" data-act="download">Download CSV</button>
-      ${REPORT_EMAIL ? `<a class="btn primary" href="${submitMailto()}">Submit my results</a>` : ""}
+      ${(TRACK_URL || REPORT_EMAIL) ? `<button class="btn primary" data-act="submit" id="sub"${S.submitted?" disabled":""}>${S.submitted?"Submitted \u2713":"Submit my results"}</button>` : ""}
     </div>
-    ${REPORT_EMAIL ? `<p class="note">Submit opens an email to ${esc(REPORT_EMAIL)} with your results in the message. For a file, use Download CSV and attach it.</p>` : ""}
+    ${(TRACK_URL || REPORT_EMAIL) ? `<p class="note" id="subnote">${S.submitted ? "Thank you \u2014 your results have been submitted." : (TRACK_URL ? "Submitting sends your results to us directly \u2014 no email needed. You'll see a confirmation here." : "Submit opens an email to "+esc(REPORT_EMAIL)+" with your results. For a file, use Download CSV and attach it.")}</p>` : ""}
   </div>`;
 }
 
@@ -1091,6 +1111,7 @@ app.addEventListener("click", e => {
     }catch(err){ fallback(); }
   }
   else if(act==="download"){ downloadCSV(); }
+  else if(act==="submit"){ submitResults(b); }
   else if(act==="reset"){
     if(!resetArmed){ resetArmed = true; b.textContent = "Click again to erase all progress"; return; }
     S = { name:S.name, org:S.org, t:{} }; save(); resetArmed=false; render();
