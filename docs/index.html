@@ -793,7 +793,7 @@ function sendTrack(event){
       + "&name=" + encodeURIComponent(S.name||"")
       + "&customer=" + encodeURIComponent(CUSTOMER)
       + "&ts=" + encodeURIComponent(new Date().toISOString());
-    new Image().src = u;
+    if(navigator.sendBeacon){ navigator.sendBeacon(u); } else { fetch(u, {method:"POST", mode:"no-cors", keepalive:true}); }
   }catch(e){}
 }
 (function track(){
