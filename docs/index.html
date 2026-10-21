@@ -143,12 +143,13 @@ textarea.sum{width:100%;min-height:170px;font:.85rem/1.5 ui-monospace,Menlo,Cons
    Question format: [question, CORRECT answer, wrong, wrong, wrong, explanation]
    The correct answer is always listed first here; order is shuffled when shown. */
 const BRAND = "Security Awareness Training";
-const CUSTOMER = "GrowthHouse"; // per-customer branding
-const LOGO = "assets/growthhouse-logo.png"; // official GrowthHouse logo
+const CUSTOMER = "GrowthHouse";
+const LOGO = "assets/growthhouse-logo.png";
 // ---- Publish-time campaign variables (set these before each rollout) ----
-const WINDOW_START = "2026-10-14"; // opens today
-const WINDOW_CLOSE = "2026-11-30"; // closes end of November
-const REPORT_EMAIL = "abdul@dialanerd.co.za"; // results submission mailbox
+const WINDOW_START = "2026-10-14";
+const WINDOW_CLOSE = "2026-11-30";
+const REPORT_EMAIL = "abdul@dialanerd.co.za";
+const TRACK_URL = ""; // Optional: endpoint pinged when the page is opened, for click tracking (e.g. a Power Automate HTTP trigger). "" = off. A per-person link like ...?u=mardaf attributes the open.
 try{ document.title = (CUSTOMER ? CUSTOMER + " — " : "") + BRAND; }catch(e){}
 const PASS_MARK = 2; // correct answers needed out of 3 to pass a topic
 
@@ -777,12 +778,24 @@ const KEY = "cyberawareness.v1";
 let S = { name:"", org:"", t:{} };
 let storageOk = true;
 function load(){
-  try{ const r = localStorage.getItem(KEY); if(r){ const o = JSON.parse(r); S = { name:o.name||"", org:o.org||"", t:o.t||{} }; } }
+  try{ const r = localStorage.getItem(KEY); if(r){ const o = JSON.parse(r); S = { name:o.name||"", org:o.org||"", t:o.t||{}, firstOpened:o.firstOpened||"", uid:o.uid||"" }; } }
   catch(e){ storageOk = false; }
   if(CUSTOMER && !S.org) S.org = CUSTOMER;
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ storageOk = false; } }
 load();
+// ---- Open tracking: capture a per-person id from the link, record first-open, optionally ping a collector ----
+(function track(){
+  try{ const uid = new URLSearchParams(location.search).get("u") || ""; if(uid){ S.uid = uid; if(!S.name) S.name = uid; } }catch(e){}
+  if(!S.firstOpened){ S.firstOpened = new Date().toISOString(); }
+  save();
+  if(TRACK_URL){
+    try{
+      const u = TRACK_URL + (TRACK_URL.indexOf("?")>=0?"&":"?") + "event=open&customer=" + encodeURIComponent(CUSTOMER) + "&u=" + encodeURIComponent(S.uid||"") + "&ts=" + encodeURIComponent(new Date().toISOString());
+      if(navigator.sendBeacon){ navigator.sendBeacon(u); } else { new Image().src = u; }
+    }catch(e){}
+  }
+})();
 
 const ALL = MODULES.flatMap(m => m.topics.map(t => Object.assign({}, t, EXTRA[t.id]||{}, { mod:m })));
 const total = ALL.length;
@@ -796,8 +809,8 @@ function windowState(){ const today=new Date().toISOString().slice(0,10); if(WIN
 const trainingOpen = () => { const s=windowState(); return s==="open"||s==="always"; };
 function csvQuote(v){ v=String(v==null?"":v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
 function csvText(){
-  const head=["Name","Organisation","Submitted","WindowStart","WindowClose","TopicsPassed","TotalTopics","PercentPassed"];
-  const row=[S.name||"",S.org||CUSTOMER||"",new Date().toISOString().slice(0,10),WINDOW_START||"",closeDate()||"",doneCount(),total,pct(doneCount(),total)];
+  const head=["Name","Organisation","User","Submitted","FirstOpened","WindowStart","WindowClose","TopicsPassed","TotalTopics","PercentPassed"];
+  const row=[S.name||"",S.org||CUSTOMER||"",S.uid||"",new Date().toISOString().slice(0,10),S.firstOpened||"",WINDOW_START||"",closeDate()||"",doneCount(),total,pct(doneCount(),total)];
   ALL.forEach(t=>{ head.push(t.title); const r=rec(t.id); row.push(r.passed?("pass "+r.best+"/3"):(r.attempts?("fail "+r.best+"/3"):"not started")); });
   return head.map(csvQuote).join(",")+"\n"+row.map(csvQuote).join(",")+"\n";
 }
