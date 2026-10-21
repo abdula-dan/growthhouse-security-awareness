@@ -778,23 +778,27 @@ const KEY = "cyberawareness.v1";
 let S = { name:"", org:"", t:{} };
 let storageOk = true;
 function load(){
-  try{ const r = localStorage.getItem(KEY); if(r){ const o = JSON.parse(r); S = { name:o.name||"", org:o.org||"", t:o.t||{}, firstOpened:o.firstOpened||"", uid:o.uid||"" }; } }
+  try{ const r = localStorage.getItem(KEY); if(r){ const o = JSON.parse(r); S = { name:o.name||"", org:o.org||"", t:o.t||{}, firstOpened:o.firstOpened||"", uid:o.uid||"", trackedStarted:o.trackedStarted||false }; } }
   catch(e){ storageOk = false; }
   if(CUSTOMER && !S.org) S.org = CUSTOMER;
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ storageOk = false; } }
 load();
-// ---- Open tracking: capture a per-person id from the link, record first-open, optionally ping a collector ----
+// ---- Tracking: record first-open locally; when TRACK_URL is set, report the learner's name to the collector once they enter it ----
+function sendTrack(event){
+  if(!TRACK_URL) return;
+  try{
+    const u = TRACK_URL + (TRACK_URL.indexOf("?")>=0?"&":"?")
+      + "event=" + encodeURIComponent(event)
+      + "&name=" + encodeURIComponent(S.name||"")
+      + "&customer=" + encodeURIComponent(CUSTOMER)
+      + "&ts=" + encodeURIComponent(new Date().toISOString());
+    if(navigator.sendBeacon){ navigator.sendBeacon(u); } else { new Image().src = u; }
+  }catch(e){}
+}
 (function track(){
   try{ const uid = new URLSearchParams(location.search).get("u") || ""; if(uid){ S.uid = uid; if(!S.name) S.name = uid; } }catch(e){}
-  if(!S.firstOpened){ S.firstOpened = new Date().toISOString(); }
-  save();
-  if(TRACK_URL){
-    try{
-      const u = TRACK_URL + (TRACK_URL.indexOf("?")>=0?"&":"?") + "event=open&customer=" + encodeURIComponent(CUSTOMER) + "&u=" + encodeURIComponent(S.uid||"") + "&ts=" + encodeURIComponent(new Date().toISOString());
-      if(navigator.sendBeacon){ navigator.sendBeacon(u); } else { new Image().src = u; }
-    }catch(e){}
-  }
+  if(!S.firstOpened){ S.firstOpened = new Date().toISOString(); save(); }
 })();
 
 const ALL = MODULES.flatMap(m => m.topics.map(t => Object.assign({}, t, EXTRA[t.id]||{}, { mod:m })));
@@ -897,6 +901,7 @@ function renderHome(){
   </div>`;
   const nm = document.getElementById("nm"), og = document.getElementById("og");
   nm.addEventListener("input", () => { S.name = nm.value; save(); });
+  nm.addEventListener("change", () => { if((S.name||"").trim() && !S.trackedStarted){ S.trackedStarted = true; save(); sendTrack("started"); } });
   og.addEventListener("input", () => { S.org = og.value; save(); });
 }
 
