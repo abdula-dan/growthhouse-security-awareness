@@ -785,6 +785,7 @@ function load(){
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ storageOk = false; } }
 load();
 // ---- Tracking: record first-open locally; when TRACK_URL is set, report the learner's name to the collector once they enter it ----
+function trackFile(){ return ((CUSTOMER+"_"+(S.name||"")).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")) || "learner"; }
 function sendTrack(event){
   if(!TRACK_URL) return;
   try{
@@ -792,6 +793,7 @@ function sendTrack(event){
       + "event=" + encodeURIComponent(event)
       + "&name=" + encodeURIComponent(S.name||"")
       + "&customer=" + encodeURIComponent(CUSTOMER)
+      + "&file=" + encodeURIComponent(trackFile())
       + "&ts=" + encodeURIComponent(new Date().toISOString());
     if(navigator.sendBeacon){ navigator.sendBeacon(u); } else { fetch(u, {method:"POST", mode:"no-cors", keepalive:true}); }
   }catch(e){}
@@ -831,6 +833,7 @@ function submitResults(btn){
       const url = TRACK_URL + (TRACK_URL.indexOf("?")>=0?"&":"?")
         + "event=completed&name=" + encodeURIComponent(S.name||"")
         + "&customer=" + encodeURIComponent(CUSTOMER)
+        + "&file=" + encodeURIComponent(trackFile())
         + "&ts=" + encodeURIComponent(new Date().toISOString());
       let ok=false;
       try{ ok = navigator.sendBeacon(url, new Blob([csv], {type:"text/plain;charset=UTF-8"})); }catch(e){}
